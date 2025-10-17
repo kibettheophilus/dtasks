@@ -75,6 +75,10 @@ kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 mock-web-server = { module = "com.squareup.okhttp3:mockwebserver3", version.ref = "mock-web-server" }
 
+[bundles]
+room = ["room-runtime", "room-compiler", "room-ktx"]
+koin = ["koin-core", "koin-android", "koin-compose", "koin-androidx-workmanager"]
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
