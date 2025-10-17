@@ -1,19 +1,30 @@
 [versions]
 agp = "9.0.0-alpha05"
 coreKtx = "1.17.0"
+coroutines = "1.10.2"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
-kotlin = "2.0.21"
-composeBom = "2024.09.00"
+kotlin = "2.2.20"
+composeBom = "2025.10.00"
+koin = "4.1.1"
+ksp = "2.2.20-2.0.3"
+kotlin-test = "2.2.20"
+kotlinx-serialization = "1.9.0"
+ktlint = "13.1.0"
+mock-web-server = "5.2.1"
+navigation = "2.9.5"
+preferences = "1.1.7"
+retrofit = "3.0.0"
+robolectric = "4.16"
+room = "2.8.2"
+spotless = "8.0.0"
+test-core = "1.7.0"
+work-manager = "2.10.5"
 
 [libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -24,8 +35,51 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+
+# Test
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin-test" }
+androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "test-core" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+compose-junit = { module = "androidx.compose.ui:ui-test-junit4" }
+manifest-test = { module = "androidx.compose.ui:ui-test-manifest" }
+
+# koin
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager" }
+
+# coroutines
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+
+#room
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+# preferences
+preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "preferences" }
+
+# work-manager
+work-runtime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work-manager" }
+work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work-manager" }
+
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+mock-web-server = { module = "com.squareup.okhttp3:mockwebserver3", version.ref = "mock-web-server" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
