@@ -27,7 +27,7 @@ val networkModule = module {
 
 private fun provideOkHttpClient(preferenceManager: PreferenceManager): OkHttpClient {
     return OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor(tokenProvider))
+        .addInterceptor(AuthInterceptor(preferenceManager=preferenceManager))
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
