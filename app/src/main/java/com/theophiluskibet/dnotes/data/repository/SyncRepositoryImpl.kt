@@ -1,6 +1,7 @@
 package com.theophiluskibet.dnotes.data.repository
 
 import com.theophiluskibet.dnotes.data.local.dao.TasksDao
+import com.theophiluskibet.dnotes.data.local.entity.TaskEntity
 import com.theophiluskibet.dnotes.data.local.preferences.PreferenceManager
 import com.theophiluskibet.dnotes.data.mappers.toDomain
 import com.theophiluskibet.dnotes.data.mappers.toDto
@@ -30,13 +31,10 @@ class SyncRepositoryImpl(
         }
     }
 
-    override suspend fun pushTasks(localTasks: List<TaskModel>): Result<Boolean> {
+    override suspend fun pushTasks(): Result<Boolean> {
         return try {
-            val lastSyncTime = preferenceManager.fetchLastSyncTime.first() ?: 0L
 
-            val pending = tasksDao.getTasksBySyncTime(lastSyncTime = lastSyncTime)
-
-            val response = tasksApi.syncTasks(tasks = pending.map { it.toDto() })
+            val response = tasksApi.syncTasks(tasks = getUnsyncedTasks().map { it.toDto() })
 
             if (response.isSuccessful) {
                 Result.success(true)
@@ -59,11 +57,30 @@ class SyncRepositoryImpl(
                     remoteTask.updatedAt > localTask.updatedAt -> {
                         tasksDao.insertTask(remoteTask.toEntity())
                     }
+
                     else -> {
                         // keep the changes
                     }
                 }
             }
         }
+    }
+
+    override suspend fun updateLastSyncTime() {
+        preferenceManager.updateLastSyncTime(timeStamp = 0L)
+    }
+
+    override suspend fun updateSyncedTasks(taskIds: List<String>) {
+        taskIds.forEach { id ->
+            tasksDao.getTaskById(id)?.let { task ->
+                tasksDao.updateTask(task.copy(updatedAt = ""))
+            }
+        }
+    }
+
+    override suspend fun getUnsyncedTasks(): List<TaskEntity> {
+        val lastSyncTime = preferenceManager.fetchLastSyncTime.first() ?: 0L
+
+        return tasksDao.getTasksBySyncTime(lastSyncTime = lastSyncTime)
     }
 }
