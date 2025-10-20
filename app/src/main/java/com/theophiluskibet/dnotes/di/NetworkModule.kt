@@ -1,7 +1,7 @@
 package com.theophiluskibet.dnotes.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.theophiluskibet.dnotes.data.local.preferences.TokenManager
+import com.theophiluskibet.dnotes.data.local.preferences.PreferenceManager
 import com.theophiluskibet.dnotes.data.remote.api.AuthApi
 import com.theophiluskibet.dnotes.data.remote.api.TasksApi
 import com.theophiluskibet.dnotes.helpers.AuthInterceptor
@@ -21,11 +21,11 @@ val networkModule = module {
     singleOf(::provideJson)
     singleOf(::provideTasksApi)
     singleOf(::provideAuthApi)
-    singleOf(::TokenManager)
+    singleOf(::PreferenceManager)
     singleOf(::AuthInterceptor)
 }
 
-private fun provideOkHttpClient(tokenProvider: TokenManager): OkHttpClient {
+private fun provideOkHttpClient(preferenceManager: PreferenceManager): OkHttpClient {
     return OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor(tokenProvider))
         .addInterceptor(HttpLoggingInterceptor().apply {
