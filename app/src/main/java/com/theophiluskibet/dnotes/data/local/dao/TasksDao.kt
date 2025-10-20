@@ -17,11 +17,14 @@ interface TasksDao {
     fun updateTask(task: TaskEntity)
 
     @Query("SELECT * FROM tasks WHERE id = :id")
-    fun getTaskById(id: String): TaskEntity
+    fun getTaskById(id: String): TaskEntity?
 
     @Query("SELECT * FROM tasks")
     fun getTasks(): Flow<List<TaskEntity>>
 
     @Query("DELETE FROM tasks WHERE id = :id")
     fun deleteTaskById(id: String)
+
+    @Query("SELECT * FROM tasks WHERE updatedAt > :lastSyncTime")
+    suspend fun getTasksBySyncTime(lastSyncTime: Long): List<TaskEntity>
 }
