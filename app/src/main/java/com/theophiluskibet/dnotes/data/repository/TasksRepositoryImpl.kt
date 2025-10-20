@@ -19,7 +19,8 @@ class TasksRepositoryImpl(private val tasksDao: TasksDao) : TasksRepository {
     }
 
     override suspend fun getTaskById(id: String): TaskModel {
-        val task = tasksDao.getTaskById(id = id).toDomain()
+        // TODO: fix me 
+        val task = tasksDao.getTaskById(id = id)!!.toDomain()
         return task
     }
 
