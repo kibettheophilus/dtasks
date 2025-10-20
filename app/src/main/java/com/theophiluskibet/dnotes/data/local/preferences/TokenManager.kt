@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class TokenProvider(private val dataStore: DataStore<Preferences>) {
+class TokenManager(private val dataStore: DataStore<Preferences>) {
 
     val fetchToken: Flow<String?> = dataStore.data.map { preferences ->
         preferences[TOKEN_KEY]
