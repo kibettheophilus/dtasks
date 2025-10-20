@@ -9,5 +9,6 @@ fun TaskModel.toEntity() = TaskEntity(
     description = description,
     dueDate = dueDate,
     isCompleted = isCompleted,
+    createdAt = createdAt,
     updatedAt = updatedAt
 )
