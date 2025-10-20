@@ -10,6 +10,7 @@ fun TaskEntity.toDomain() = TaskModel(
     description = description,
     dueDate = dueDate,
     isCompleted = isCompleted,
+    createdAt = createdAt,
     updatedAt = updatedAt
 )
 
@@ -19,5 +20,6 @@ fun TaskEntity.toDto() = TaskDto(
     description = description,
     dueDate = dueDate,
     isCompleted = isCompleted,
+    createdAt = createdAt,
     updatedAt = updatedAt
 )
