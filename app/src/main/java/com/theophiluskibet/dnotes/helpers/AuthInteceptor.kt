@@ -1,9 +1,9 @@
 package com.theophiluskibet.dnotes.helpers
 
-import com.theophiluskibet.dnotes.data.local.preferences.TokenProvider
+import com.theophiluskibet.dnotes.data.local.preferences.TokenManager
 import okhttp3.Interceptor
 
-class AuthInterceptor(private val tokenProvider: TokenProvider) : Interceptor {
+class AuthInterceptor(private val tokenProvider: TokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
         // todo: fix this
         val token = tokenProvider.fetchToken
