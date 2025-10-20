@@ -63,6 +63,8 @@ dependencies {
 
     implementation(libs.coroutines.core)
 
+    implementation(libs.work.runtime)
+
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)
