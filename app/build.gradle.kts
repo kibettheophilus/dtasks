@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -54,7 +55,13 @@ dependencies {
 
     implementation(libs.bundles.koin)
 
-    implementation(libs.retrofit)
+    implementation(libs.bundles.retrofit)
+
+    implementation(libs.kotlinx.serialization)
+
+    implementation(libs.preferences)
+
+    implementation(libs.coroutines.core)
 
     testImplementation(libs.junit)
 
