@@ -8,7 +8,7 @@ interface TasksRepository {
 
     suspend fun getTaskById(id: String): TaskModel
 
-    suspend fun createTask(task: TaskModel)
+    suspend fun insertTask(task: TaskModel)
 
     suspend fun updateTask(task: TaskModel)
 
