@@ -5,6 +5,6 @@ data class TaskModel(
     val title: String,
     val description: String,
     val dueDate: String,
-    val isComplete: Boolean,
+    val isCompleted: Boolean,
     val updatedAt: String
 )
