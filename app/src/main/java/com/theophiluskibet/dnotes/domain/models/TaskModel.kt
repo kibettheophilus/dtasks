@@ -6,5 +6,6 @@ data class TaskModel(
     val description: String,
     val dueDate: String,
     val isCompleted: Boolean,
+    val createdAt: String,
     val updatedAt: String
 )

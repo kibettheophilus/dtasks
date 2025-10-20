@@ -11,5 +11,6 @@ data class TaskEntity(
     val description: String,
     val dueDate: String,
     val isCompleted: Boolean = false,
-    val updatedAt: String
+    val createdAt: String,
+    val updatedAt: String,
 )
