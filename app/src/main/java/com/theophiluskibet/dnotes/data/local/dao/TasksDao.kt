@@ -17,11 +17,11 @@ interface TasksDao {
     fun updateTask(task: TaskEntity)
 
     @Query("SELECT * FROM tasks WHERE id = :id")
-    fun getTaskById(id: Int): TaskEntity
+    fun getTaskById(id: String): TaskEntity
 
     @Query("SELECT * FROM tasks")
     fun getTasks(): Flow<List<TaskEntity>>
 
     @Query("DELETE FROM tasks WHERE id = :id")
-    fun deleteTaskById(id: Int)
+    fun deleteTaskById(id: String)
 }
