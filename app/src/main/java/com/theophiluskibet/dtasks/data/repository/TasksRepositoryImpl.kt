@@ -5,10 +5,13 @@ import com.theophiluskibet.dtasks.data.mappers.toDomain
 import com.theophiluskibet.dtasks.data.mappers.toEntity
 import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.domain.repository.TasksRepository
+import com.theophiluskibet.dtasks.helpers.safeDbTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class TasksRepositoryImpl(private val tasksDao: TasksDao) : TasksRepository {
+class TasksRepositoryImpl(
+    private val tasksDao: TasksDao
+) : TasksRepository {
     override suspend fun getTasks(): Flow<List<TaskModel>> {
         val tasks = tasksDao.getTasks().map { list ->
             list.map { task ->
@@ -25,14 +28,20 @@ class TasksRepositoryImpl(private val tasksDao: TasksDao) : TasksRepository {
     }
 
     override suspend fun insertTask(task: TaskModel) {
-        tasksDao.insertTask(task = task.toEntity())
+        safeDbTransaction {
+            tasksDao.insertTask(task = task.toEntity())
+        }
     }
 
     override suspend fun updateTask(task: TaskModel) {
-        tasksDao.updateTask(task = task.toEntity())
+        safeDbTransaction {
+            tasksDao.updateTask(task = task.toEntity())
+        }
     }
 
     override suspend fun deleteTask(id: String) {
-        tasksDao.deleteTaskById(id = id)
+        safeDbTransaction {
+            tasksDao.deleteTaskById(id = id)
+        }
     }
 }
