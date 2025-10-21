@@ -5,6 +5,7 @@ import com.theophiluskibet.dnotes.di.localModule
 import com.theophiluskibet.dnotes.di.networkModule
 import com.theophiluskibet.dnotes.di.repositoryModule
 import com.theophiluskibet.dnotes.di.syncModule
+import com.theophiluskibet.dnotes.di.viewModelModule
 import com.theophiluskibet.dnotes.sync.schedulePeriodicSync
 import com.theophiluskibet.dnotes.sync.triggerImmediateSync
 import org.koin.android.ext.koin.androidContext
@@ -16,7 +17,12 @@ class DTasksApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@DTasksApp)
-            modules(listOf(localModule, networkModule, repositoryModule, syncModule))
+            modules(
+                listOf(
+                    localModule, networkModule, repositoryModule, syncModule,
+                    viewModelModule
+                )
+            )
             workManagerFactory()
 
             schedulePeriodicSync()
