@@ -20,6 +20,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,14 +45,36 @@ import com.theophiluskibet.dnotes.presentation.ui.theme.DNotesTheme
 import com.theophiluskibet.dnotes.presentation.ui.theme.PrimaryBlue
 import com.theophiluskibet.dnotes.presentation.ui.theme.TextPrimary
 import com.theophiluskibet.dnotes.presentation.ui.theme.TextSecondary
+import org.koin.androidx.compose.koinViewModel
+
+@Composable
+fun LoginScreen(
+    onLoginSuccess: () -> Unit = {},
+    viewModel: LoginViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.isLoginSuccessful) {
+        if (uiState.isLoginSuccessful) {
+            onLoginSuccess()
+            viewModel.resetLoginState()
+        }
+    }
+    LoginScreenContent(
+        onLoginClick = { email ->
+            viewModel.login(email)
+        },
+        isLoading = uiState.isLoading,
+        errorMessage = uiState.errorMessage,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun LoginScreenContent(
     onLoginClick: (String) -> Unit = {},
     isLoading: Boolean = false,
     errorMessage: String? = null,
-    modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -59,7 +83,7 @@ fun LoginScreen(
     val canLogin = email.isValidEmail() && !isLoading
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(24.dp),
@@ -229,7 +253,7 @@ fun LoginScreenPreview() {
 @Composable
 fun LoginScreenLoadingPreview() {
     DNotesTheme {
-        LoginScreen(
+        LoginScreenContent(
             isLoading = true
         )
     }
@@ -239,7 +263,7 @@ fun LoginScreenLoadingPreview() {
 @Composable
 fun LoginScreenErrorPreview() {
     DNotesTheme {
-        LoginScreen(
+        LoginScreenContent(
             errorMessage = "Invalid email address. Please try again."
         )
     }
