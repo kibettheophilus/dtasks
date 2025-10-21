@@ -7,6 +7,7 @@ import com.theophiluskibet.dtasks.helpers.isValidEmail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -16,38 +17,50 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     fun login(email: String) {
         if (!email.isValidEmail()) {
-            _uiState.value = _uiState.value.copy(
-                errorMessage = "Please enter a valid email address"
-            )
-            return
+            _uiState.update {
+                it.copy(
+                    errorMessage = "Please enter a valid email address"
+                )
+                return
+            }
         }
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                errorMessage = null
-            )
-            authRepository.login(email = email).onSuccess {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    isLoginSuccessful = true,
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
                     errorMessage = null
                 )
+            }
+            authRepository.login(email = email).onSuccess {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isLoginSuccessful = true,
+                        errorMessage = null
+                    )
+                }
             }.onFailure {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Login failed. Please try again."
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "Login failed. Please try again."
+                    )
+                }
             }
         }
     }
 
     fun clearError() {
-        _uiState.value = _uiState.value.copy(errorMessage = null)
+        _uiState.update {
+            it.copy(errorMessage = null)
+        }
     }
 
     fun resetLoginState() {
-        _uiState.value = _uiState.value.copy(isLoginSuccessful = false)
+        _uiState.update {
+            it.copy(isLoginSuccessful = false)
+        }
     }
 }
 
