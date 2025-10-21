@@ -3,6 +3,7 @@ package com.theophiluskibet.dnotes.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.theophiluskibet.dnotes.domain.repository.AuthRepository
+import com.theophiluskibet.dnotes.helpers.isValidEmail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,7 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun login(email: String) {
-        if (!isValidEmail(email)) {
+        if (!email.isValidEmail()) {
             _uiState.value = _uiState.value.copy(
                 errorMessage = "Please enter a valid email address"
             )
@@ -47,11 +48,6 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     fun resetLoginState() {
         _uiState.value = _uiState.value.copy(isLoginSuccessful = false)
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        return email.isNotBlank() &&
-                android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 }
 
