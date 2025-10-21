@@ -21,12 +21,6 @@ class TasksRepositoryImpl(
         return tasks
     }
 
-    override suspend fun getTaskById(id: String): TaskModel {
-        // TODO: fix me 
-        val task = tasksDao.getTaskById(id = id)!!.toDomain()
-        return task
-    }
-
     override suspend fun insertTask(task: TaskModel) {
         safeDbTransaction {
             tasksDao.insertTask(task = task.toEntity())
