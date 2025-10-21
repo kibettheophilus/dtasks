@@ -1,9 +1,9 @@
 package com.theophiluskibet.dtasks.data.local.converters
 
-import com.theophiluskibet.dtasks.data.local.converters.DateConverter
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
-import java.util.*
+import java.util.Date
 
 class DateConverterTest {
 
