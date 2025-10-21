@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.theophiluskibet.dnotes"
+    namespace = "com.theophiluskibet.dtasks"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.theophiluskibet.dnotes"
+        applicationId = "com.theophiluskibet.dtasks"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
