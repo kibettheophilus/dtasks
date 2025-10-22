@@ -2,7 +2,6 @@ package com.theophiluskibet.dtasks.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.Date
 
 @Entity(tableName = "tasks")
 data class TaskEntity(
@@ -10,8 +9,8 @@ data class TaskEntity(
     val id: String,
     val title: String,
     val description: String,
-    val dueDate: Date?,
+    val dueDate: Long?,
     val isCompleted: Boolean = false,
-    val createdAt: String,
-    val updatedAt: String,
+    val createdAt: Long,
+    val updatedAt: Long,
 )
