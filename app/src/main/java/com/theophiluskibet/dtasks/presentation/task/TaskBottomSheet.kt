@@ -22,16 +22,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.theophiluskibet.dtasks.domain.models.TaskModel
+import com.theophiluskibet.dtasks.helpers.LocalDateTime
+import com.theophiluskibet.dtasks.helpers.asEpochMilliseconds
+import com.theophiluskibet.dtasks.helpers.asLocalDateTime
 import com.theophiluskibet.dtasks.presentation.components.DTaskButton
 import com.theophiluskibet.dtasks.presentation.ui.theme.BackgroundGray
 import com.theophiluskibet.dtasks.presentation.ui.theme.DTasksTheme
 import com.theophiluskibet.dtasks.presentation.ui.theme.PrimaryBlue
 import com.theophiluskibet.dtasks.presentation.ui.theme.TextPrimary
 import com.theophiluskibet.dtasks.presentation.ui.theme.TextSecondary
-import java.text.SimpleDateFormat
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import java.util.*
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun TaskBottomSheet(
     isVisible: Boolean,
@@ -93,7 +99,7 @@ fun TaskBottomSheet(
 
                 // Due Date Section
                 TaskDateSection(
-                    selectedDate = selectedDate,
+                    selectedDate = selectedDate?.date,
                     onDateClick = { showDatePicker = true }
                 )
 
@@ -108,8 +114,8 @@ fun TaskBottomSheet(
                             description = description.trim(),
                             dueDate = selectedDate,
                             isCompleted = task?.isCompleted ?: false,
-                            createdAt = task?.createdAt ?: Date().toString(),
-                            updatedAt = Date().toString()
+                            createdAt = task?.createdAt ?: Clock.System.now().LocalDateTime,
+                            updatedAt = kotlin.time.Clock.System.now().LocalDateTime
                         )
                         onSaveTask(newTask)
                         onDismiss()
@@ -276,7 +282,7 @@ private fun TaskDescriptionField(
 
 @Composable
 private fun TaskDateSection(
-    selectedDate: Date?,
+    selectedDate: LocalDate?,
     onDateClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -304,7 +310,9 @@ private fun TaskDateSection(
             ) {
                 Text(
                     text = selectedDate?.let {
-                        SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(it)
+                        val month =
+                            it.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }
+                        "$month ${it.dayOfMonth}, ${it.year}"
                     } ?: "Select a date",
                     color = if (selectedDate != null) TextPrimary else TextSecondary,
                     fontSize = 16.sp
@@ -321,15 +329,16 @@ private fun TaskDateSection(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 private fun TaskDatePickerDialog(
-    initialDate: Date?,
-    onDateSelected: (Date) -> Unit,
+    initialDate: LocalDateTime?,
+    onDateSelected: (LocalDateTime) -> Unit,
     onDismiss: () -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialDate?.time ?: System.currentTimeMillis()
+        initialSelectedDateMillis = initialDate?.asEpochMilliseconds()
+            ?: Clock.System.now().LocalDateTime.asEpochMilliseconds()
     )
 
     DatePickerDialog(
@@ -338,7 +347,7 @@ private fun TaskDatePickerDialog(
             TextButton(
                 onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        onDateSelected(Date(millis))
+                        onDateSelected(millis.asLocalDateTime())
                     }
                 }
             ) {
@@ -375,18 +384,20 @@ fun TaskBottomSheetPreview() {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
 fun TaskBottomSheetEditPreview() {
     DTasksTheme {
+        val date = Clock.System.now().LocalDateTime
         val sampleTask = TaskModel(
             id = "1",
             title = "Buy groceries",
             description = "Milk, eggs, bread",
-            dueDate = Date(),
+            dueDate = date,
             isCompleted = false,
-            createdAt = Date().toString(),
-            updatedAt = Date().toString()
+            createdAt = date,
+            updatedAt = date
         )
 
         TaskBottomSheet(
