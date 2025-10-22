@@ -53,6 +53,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.theophiluskibet.dtasks.domain.models.TaskModel
+import com.theophiluskibet.dtasks.domain.models.isDue
+import com.theophiluskibet.dtasks.helpers.LocalDateTime
+import com.theophiluskibet.dtasks.helpers.formatDueDate
 import com.theophiluskibet.dtasks.presentation.task.TaskBottomSheet
 import com.theophiluskibet.dtasks.presentation.ui.theme.BackgroundGray
 import com.theophiluskibet.dtasks.presentation.ui.theme.DTasksTheme
@@ -63,12 +66,12 @@ import com.theophiluskibet.dtasks.presentation.ui.theme.PrimaryBlue
 import com.theophiluskibet.dtasks.presentation.ui.theme.SurfaceGray
 import com.theophiluskibet.dtasks.presentation.ui.theme.TextPrimary
 import com.theophiluskibet.dtasks.presentation.ui.theme.TextSecondary
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import org.koin.androidx.compose.koinViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.TimeUnit
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun TasksScreen(
@@ -105,7 +108,7 @@ fun TasksScreenContent(
 
     val filteredTasks = when (selectedFilter) {
         TaskFilter.ALL -> uiState.tasks.sortedWith(compareBy<TaskModel> { it.isCompleted }.thenBy { it.dueDate })
-        TaskFilter.DUE_DATE -> uiState.tasks.sortedWith(compareBy<TaskModel> { it.isCompleted }.thenBy { it.dueDate })
+        TaskFilter.DUE -> uiState.tasks.filter { it.isDue() }
         TaskFilter.COMPLETED -> uiState.tasks.filter { it.isCompleted }
     }
 
@@ -309,7 +312,7 @@ fun TaskItem(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = formatDueDate(task.dueDate),
+                    text = task.dueDate.formatDueDate(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (task.isCompleted)
                         TextSecondary.copy(alpha = 0.5f)
@@ -406,78 +409,46 @@ fun AllTasksCompletedContent(
     }
 }
 
-private fun formatDueDate(dueDate: Date?): String {
-    if (dueDate == null) return "No due date"
-
-    val today = Calendar.getInstance()
-    val dueDateCal = Calendar.getInstance().apply { time = dueDate }
-
-    // Reset time to compare only dates
-    today.set(Calendar.HOUR_OF_DAY, 0)
-    today.set(Calendar.MINUTE, 0)
-    today.set(Calendar.SECOND, 0)
-    today.set(Calendar.MILLISECOND, 0)
-
-    dueDateCal.set(Calendar.HOUR_OF_DAY, 0)
-    dueDateCal.set(Calendar.MINUTE, 0)
-    dueDateCal.set(Calendar.SECOND, 0)
-    dueDateCal.set(Calendar.MILLISECOND, 0)
-
-    val diffInMillis = dueDateCal.timeInMillis - today.timeInMillis
-    val daysDiff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)
-
-    return when {
-        daysDiff == 0L -> "Due Today"
-        daysDiff == 1L -> "Due Tomorrow"
-        daysDiff == -1L -> "Due Yesterday"
-        daysDiff > 1 -> "Due in $daysDiff days"
-        daysDiff < -1 -> "Overdue by ${-daysDiff} days"
-        else -> SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(dueDate)
-    }
-}
-
 enum class TaskFilter(val displayName: String) {
     ALL("All"),
-    DUE_DATE("Due Date"),
+    DUE("Due"),
     COMPLETED("Completed"),
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
 fun TasksScreenPreview() {
     DTasksTheme {
-        val today = Calendar.getInstance().time
-        val tomorrow = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_MONTH, 1)
-        }.time
-        val futureDate = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_MONTH, 3)
-        }.time
+        val today = Clock.System.now()
+        val tomorrow = Clock.System.now().plus(1, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
+        val futureDate =
+            Clock.System.now().plus(5, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
 
         val sampleTasks = listOf(
             TaskModel(
                 id = "1",
                 title = "Finish design mockups",
-                dueDate = today,
+                dueDate = today.LocalDateTime,
                 isCompleted = false,
-                createdAt = "",
-                updatedAt = ""
+                createdAt = today.LocalDateTime,
+                updatedAt = today.LocalDateTime
             ),
             TaskModel(
                 id = "2",
                 title = "Call the plumber",
-                dueDate = tomorrow,
+                dueDate = tomorrow.LocalDateTime,
                 isCompleted = false,
-                createdAt = "",
-                updatedAt = ""
+                createdAt = today.LocalDateTime,
+                updatedAt = today.LocalDateTime
             ),
             TaskModel(
                 id = "3",
                 title = "Buy groceries",
-                dueDate = futureDate,
+                dueDate = futureDate.LocalDateTime,
                 isCompleted = true,
-                createdAt = "",
-                updatedAt = ""
+                createdAt = today.LocalDateTime,
+                updatedAt = today.LocalDateTime
             )
         )
 
@@ -486,6 +457,7 @@ fun TasksScreenPreview() {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
 fun TasksScreenEmptyPreview() {
@@ -495,10 +467,10 @@ fun TasksScreenEmptyPreview() {
                 TaskModel(
                     id = "1",
                     title = "Sample completed task",
-                    dueDate = Calendar.getInstance().time,
+                    dueDate = Clock.System.now().LocalDateTime,
                     isCompleted = true,
-                    createdAt = "",
-                    updatedAt = ""
+                    createdAt = Clock.System.now().LocalDateTime,
+                    updatedAt = Clock.System.now().LocalDateTime
                 )
             )
         )
