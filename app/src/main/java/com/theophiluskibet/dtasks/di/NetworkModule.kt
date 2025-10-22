@@ -1,6 +1,7 @@
 package com.theophiluskibet.dtasks.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.theophiluskibet.dtasks.BuildConfig
 import com.theophiluskibet.dtasks.data.local.preferences.PreferenceManager
 import com.theophiluskibet.dtasks.data.remote.api.AuthApi
 import com.theophiluskibet.dtasks.data.remote.api.TasksApi
@@ -39,7 +40,7 @@ private fun provideOkHttpClient(preferenceManager: PreferenceManager): OkHttpCli
 private fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
 
     return Retrofit.Builder()
-        .baseUrl("https://5a7a0a086f03.ngrok-free.app/")
+        .baseUrl(BuildConfig.BASE_URL)
         .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
