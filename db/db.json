@@ -1,0 +1,13 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Buy groceries",
+      "description": "Milk, eggs, bread",
+      "completed": false,
+      "dueDate": "2025-10-06T10:00:00Z",
+      "updatedAt": "2025-10-06T10:00:00Z",
+      "createdAt": "2025-10-06T10:00:00Z"
+    }
+  ]
+}

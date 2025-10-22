@@ -1,0 +1,39 @@
+name: Deploy to Playstore
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Assemble AAB and Deploy to Playstore
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Bundle AAB
+        run: ./gradlew assembleRelease
+
+      - name: Sign Release AAB
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Deploy to Playstore
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: com.theophiluskibet.dtasks
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: internal

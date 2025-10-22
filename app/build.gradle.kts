@@ -1,22 +1,28 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "com.theophiluskibet.dnotes"
+    namespace = "com.theophiluskibet.dtasks"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.theophiluskibet.dnotes"
+        applicationId = "com.theophiluskibet.dtasks"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val baseUrl = project.findProperty("baseUrl") as String
+
+        buildConfigField("String", "BASE_URL", baseUrl)
     }
 
     buildTypes {
@@ -24,7 +30,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -34,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -46,7 +53,30 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.material.icons)
+    implementation(libs.navigation)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    implementation(libs.bundles.koin)
+
+    implementation(libs.bundles.retrofit)
+
+    implementation(libs.kotlinx.serialization)
+
+    implementation(libs.preferences)
+
+    implementation(libs.coroutines.core)
+    implementation(libs.kotlinx.datetime)
+
+    implementation(libs.work.runtime)
+
     testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.kotlin.test)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
