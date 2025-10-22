@@ -1,5 +1,6 @@
 package com.theophiluskibet.dtasks.data.repository
 
+import android.util.Log
 import com.theophiluskibet.dtasks.data.local.dao.TasksDao
 import com.theophiluskibet.dtasks.data.local.entity.TaskEntity
 import com.theophiluskibet.dtasks.data.local.preferences.PreferenceManager
@@ -9,17 +10,26 @@ import com.theophiluskibet.dtasks.data.mappers.toEntity
 import com.theophiluskibet.dtasks.data.remote.api.TasksApi
 import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.domain.repository.SyncRepository
+import com.theophiluskibet.dtasks.helpers.LocalDateTime
+import com.theophiluskibet.dtasks.helpers.asEpochMilliseconds
+import com.theophiluskibet.dtasks.helpers.asLocalDateTime
 import kotlinx.coroutines.flow.first
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class SyncRepositoryImpl(
     private val tasksApi: TasksApi,
     private val tasksDao: TasksDao,
     private val preferenceManager: PreferenceManager
 ) : SyncRepository {
+    @OptIn(ExperimentalTime::class)
     override suspend fun fetchTasks(): Result<List<TaskModel>> {
         return try {
-            val lastSyncTime = preferenceManager.fetchLastSyncTime.first() ?: 0L
+            val lastSyncTime = preferenceManager.fetchLastSyncTime.first()
+                ?: Clock.System.now().LocalDateTime.asEpochMilliseconds()
             val response = tasksApi.getTasks(since = lastSyncTime)
+
+            Log.d("Tasky","SyncRepoFetch: ${response.body()}")
 
             if (response.isSuccessful) {
                 Result.success(response.body()?.map { it.toDomain() } ?: emptyList())
@@ -50,11 +60,14 @@ class SyncRepositoryImpl(
         remoteTasks.forEach { remoteTask ->
             val localTask = tasksDao.getTaskById(id = remoteTask.id)
 
+            Log.d("Tasky", "SyncRepo: ${remoteTasks}")
+            Log.d("Tasky", "SyncLocal: ${localTask}")
+
             if (localTask == null) {
                 tasksDao.insertTask(remoteTask.toEntity())
             } else {
                 when {
-                    remoteTask.updatedAt > localTask.updatedAt -> {
+                    remoteTask.updatedAt > localTask.updatedAt.asLocalDateTime() -> {
                         tasksDao.insertTask(remoteTask.toEntity())
                     }
 
@@ -66,20 +79,24 @@ class SyncRepositoryImpl(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun updateLastSyncTime() {
-        preferenceManager.updateLastSyncTime(timeStamp = 0L)
+        preferenceManager.updateLastSyncTime(timeStamp = Clock.System.now().LocalDateTime.asEpochMilliseconds())
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun updateSyncedTasks(taskIds: List<String>) {
         taskIds.forEach { id ->
             tasksDao.getTaskById(id)?.let { task ->
-                tasksDao.updateTask(task.copy(updatedAt = ""))
+                tasksDao.updateTask(task.copy(updatedAt = Clock.System.now().LocalDateTime.asEpochMilliseconds()))
             }
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun getUnsyncedTasks(): List<TaskEntity> {
-        val lastSyncTime = preferenceManager.fetchLastSyncTime.first() ?: 0L
+        val lastSyncTime = preferenceManager.fetchLastSyncTime.first()
+            ?: Clock.System.now().LocalDateTime.asEpochMilliseconds()
 
         return tasksDao.getTasksBySyncTime(lastSyncTime = lastSyncTime)
     }
