@@ -5,6 +5,7 @@ import com.theophiluskibet.dtasks.data.remote.models.TaskDto
 import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.helpers.asLocalDateTime
 import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
 
 fun TaskEntity.toDomain() = TaskModel(
     id = id,
@@ -16,6 +17,7 @@ fun TaskEntity.toDomain() = TaskModel(
     updatedAt = updatedAt.asLocalDateTime()
 )
 
+@OptIn(ExperimentalTime::class)
 fun TaskEntity.toDto() = TaskDto(
     id = id,
     title = title,
