@@ -27,7 +27,7 @@ val networkModule = module {
 
 private fun provideOkHttpClient(preferenceManager: PreferenceManager): OkHttpClient {
     return OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor(preferenceManager=preferenceManager))
+        .addInterceptor(AuthInterceptor(preferenceManager = preferenceManager))
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
@@ -37,8 +37,9 @@ private fun provideOkHttpClient(preferenceManager: PreferenceManager): OkHttpCli
 }
 
 private fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
+
     return Retrofit.Builder()
-        .baseUrl("https://api.example.com/")
+        .baseUrl("https://5a7a0a086f03.ngrok-free.app/")
         .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
