@@ -4,7 +4,7 @@ import com.theophiluskibet.dtasks.domain.models.TaskModel
 import kotlinx.coroutines.flow.Flow
 
 interface TasksRepository {
-    suspend fun getTasks(): Flow<List<TaskModel>>
+    suspend fun getTasks(): Flow<List<TaskModel>>?
 
     suspend fun insertTask(task: TaskModel)
 

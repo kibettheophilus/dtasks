@@ -12,13 +12,14 @@ import kotlinx.coroutines.flow.map
 class TasksRepositoryImpl(
     private val tasksDao: TasksDao
 ) : TasksRepository {
-    override suspend fun getTasks(): Flow<List<TaskModel>> {
-        val tasks = tasksDao.getTasks().map { list ->
-            list.map { task ->
-                task.toDomain()
+    override suspend fun getTasks(): Flow<List<TaskModel>>? {
+         return safeDbTransaction {
+             tasksDao.getTasks().map { list ->
+                list.map { task ->
+                    task.toDomain()
+                }
             }
-        }
-        return tasks
+        }.getOrNull()
     }
 
     override suspend fun insertTask(task: TaskModel) {
