@@ -4,12 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.domain.repository.TasksRepository
+import com.theophiluskibet.dtasks.helpers.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
 
@@ -22,7 +25,7 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
 
     private fun getTasks() {
         viewModelScope.launch {
-            tasksRepository.getTasks().collect { tasks ->
+            tasksRepository.getTasks()?.collect { tasks ->
                 _uiState.update {
                     it.copy(tasks = tasks)
                 }
@@ -30,12 +33,13 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     fun toggleTaskCompletion(task: TaskModel) {
         viewModelScope.launch {
             tasksRepository.updateTask(
                 task = task.copy(
                     isCompleted = !task.isCompleted,
-                    updatedAt = Date().toString()
+                    updatedAt = Clock.System.now().LocalDateTime
                 )
             )
         }
