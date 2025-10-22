@@ -5,7 +5,9 @@ import com.theophiluskibet.dtasks.domain.models.TaskModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun TaskDto.toDomain() = TaskModel(
     id = id,
     title = title,
