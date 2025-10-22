@@ -1,5 +1,6 @@
 package com.theophiluskibet.dtasks.data.local.preferences
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -35,7 +36,7 @@ class PreferenceManager(private val dataStore: DataStore<Preferences>) {
         preferences[IS_LOGGED_IN_KEY]
     }
 
-    suspend fun updateIsLoggedIn(isLoggedIn: Boolean = false) {
+    suspend fun updateIsLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { preferences ->
             preferences[IS_LOGGED_IN_KEY] = isLoggedIn
         }
