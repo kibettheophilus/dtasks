@@ -4,47 +4,33 @@ A simple task manager app
 ## Building and running the app.
 - You will need android studio and an emulator or a physical device
 - Clone the repository and import to android studio
-- Setup the baseUrl under `gradle.properties` (more on this below)
 - Hit the run icon 
 
 ## Starting the mock server.
-- Install mock server
+- Run the following command:
 ```bash
-npm install -g json-server
+chmod +x script.sh
+./startserver.sh
 ```
-- Open the terminal and cd to `project/db` then run the following command
-```bash
-json-server --watch db.json --port 3000
-```
-The server will run at : `http://localhost:3000`
-- Find a way to access this from your device, I used [ngrok](https://ngrok.com/) to forward the server.
-  - Once you have ngrok installed, just run
-  ```bash
-  ngrok http 3000
-  ```
-- Add the baseUrl under `gradle.properties` as string
-```
-baseUrl=""
-```
+---
+**INFO**
+- Installs json-server
+- Runs the server
+- Installs [ngrok](https://ngrok.com) based on OS
+- Exposes local host via chrome
+- sets the `baserUrl` in `gradle.properties`
+---
 
 ## Architecture overview.
-The app has been built using a modularized layered architecture. The app has the following modules:
-- **app** - entry point to application, contains navigation and overral di logic
-- **details** - feature module to handle logic related to a single character details i.e has a viewmodel and composambles
-- **list** - feature module to handle logic related to list of characters i.e has a viewmodel and composambles
-- **data** - contains the implementation of selecting data between `local` and `network` modules.
-- **local** - contains logic for saving data to local device storage
-- **network** - contains logic for fetching data from network
-- **build-logic** - not an application module but rather a configuration module for setting reausable configs across the project
-
+The app has been built using a MVVM architecture. 
+```
+UI -> ViewModel -> Repository -> sources(local and remote)
+```
 NB:
-This was a simple app and did not need to be modularized, I however decided to use this approach as a way to showcase
-my knowledge of working in a modularized codebase.
+This was a simple app and did not need to be modularized.
 
 ### Screenshots
-|                     List                     |                     Details                     |                                    
-|:--------------------------------------------:|:-----------------------------------------------:|
-| <img src="screenshots/list.png" width="200"> | <img src="screenshots/details.png" width="200"> | 
+
 
 #### Libraries and tech stack
 - [Kotlin](https://kotlinlang.org/) - programming language
@@ -63,7 +49,11 @@ my knowledge of working in a modularized codebase.
   - Deploy to Playstore
 
 ## Conflict resolution strategy.
-- 
+- I decided to go with the approach of using timestamps when doing a sync
+- I have two workers:
+   - Immediate -> triggered once during the login process
+   - Periodic -> triggered on application setup and runs after every 15 minutes
+  
 ## Running tests.
 - Unit Tests
 ```bash
@@ -74,3 +64,6 @@ my knowledge of working in a modularized codebase.
 ./gradlew testDebugAndroidTest
 ```
 ## Kwown Issues & Improvements
+- Pushing to server isn't working because `POST /sync` does not exist.
+- Improve test coverage
+- UI improvements
