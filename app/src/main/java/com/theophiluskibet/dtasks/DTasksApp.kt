@@ -26,7 +26,6 @@ class DTasksApp : Application() {
             workManagerFactory()
 
             schedulePeriodicSync()
-            triggerImmediateSync()
         }
     }
 }
