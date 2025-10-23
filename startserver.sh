@@ -131,7 +131,8 @@ fi
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║${NC}  ${YELLOW}Your ngrok URL is:${NC}                                      ${GREEN}║${NC}"
 echo -e "${GREEN}║${NC}  ${NGROK_URL}  ${GREEN}║${NC}"
-echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║${NC}  ${YELLOW}add it to gradle.properties file${NC}  ${GREEN}║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════════════════════╝${NC}"
 echo -e "\n${YELLOW}Press Ctrl+C to stop both services${NC}\n"
 
 # Keep script running
