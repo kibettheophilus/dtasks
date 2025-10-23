@@ -9,12 +9,17 @@ import com.theophiluskibet.dtasks.helpers.safeDbTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * The implementation of the [TasksRepository] interface.
+ *
+ * @param tasksDao The [TasksDao] for accessing the local database.
+ */
 class TasksRepositoryImpl(
     private val tasksDao: TasksDao
 ) : TasksRepository {
     override suspend fun getTasks(): Flow<List<TaskModel>>? {
-         return safeDbTransaction {
-             tasksDao.getTasks().map { list ->
+        return safeDbTransaction {
+            tasksDao.getTasks().map { list ->
                 list.map { task ->
                     task.toDomain()
                 }

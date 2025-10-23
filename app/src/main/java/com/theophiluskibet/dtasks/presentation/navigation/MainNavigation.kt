@@ -8,6 +8,12 @@ import androidx.navigation.compose.composable
 import com.theophiluskibet.dtasks.presentation.login.LoginScreen
 import com.theophiluskibet.dtasks.presentation.tasks.TasksScreen
 
+/**
+ * The main navigation graph for the app.
+ *
+ * @param navController The [NavHostController] for this navigation graph.
+ * @param isLoggedIn Whether the user is logged in.
+ */
 @Composable
 fun MainNavigation(
     navController: NavHostController,

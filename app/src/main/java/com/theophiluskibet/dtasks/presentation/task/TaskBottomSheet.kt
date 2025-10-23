@@ -15,12 +15,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.theophiluskibet.dtasks.R
 import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.helpers.LocalDateTime
 import com.theophiluskibet.dtasks.helpers.asEpochMilliseconds
@@ -37,6 +39,15 @@ import java.util.*
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/**
+ * A bottom sheet for creating or editing a task.
+ *
+ * @param isVisible Whether the bottom sheet is visible.
+ * @param task The task to edit, or `null` if creating a new task.
+ * @param onDismiss A callback to be invoked when the bottom sheet is dismissed.
+ * @param onSaveTask A callback to be invoked when the task is saved.
+ * @param modifier The modifier to apply to this composable.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun TaskBottomSheet(
@@ -71,7 +82,9 @@ fun TaskBottomSheet(
             ) {
                 // Header
                 TaskBottomSheetHeader(
-                    title = if (isEditing) "Edit Task" else "New Task",
+                    title = if (isEditing) stringResource(id = R.string.task_bottom_sheet_edit_title) else stringResource(
+                        id = R.string.task_bottom_sheet_new_title
+                    ),
                     onClose = onDismiss
                 )
 
@@ -79,10 +92,10 @@ fun TaskBottomSheet(
 
                 // Title Field
                 TaskTextField(
-                    label = "Title",
+                    label = stringResource(id = R.string.task_bottom_sheet_title_label),
                     value = title,
                     onValueChange = { title = it },
-                    placeholder = "e.g., Buy groceries",
+                    placeholder = stringResource(id = R.string.task_bottom_sheet_title_placeholder),
                     singleLine = true
                 )
 
@@ -92,7 +105,7 @@ fun TaskBottomSheet(
                 TaskDescriptionField(
                     value = description,
                     onValueChange = { description = it },
-                    placeholder = "e.g., Milk, eggs, bread"
+                    placeholder = stringResource(id = R.string.task_bottom_sheet_description_placeholder)
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -121,7 +134,7 @@ fun TaskBottomSheet(
                         onDismiss()
                     },
                     enabled = canSave,
-                    text = "Save Task"
+                    text = stringResource(id = R.string.task_bottom_sheet_save_button)
                 )
             }
         }
@@ -140,6 +153,13 @@ fun TaskBottomSheet(
     }
 }
 
+/**
+ * The header for the task bottom sheet.
+ *
+ * @param title The title of the bottom sheet.
+ * @param onClose A callback to be invoked when the close button is clicked.
+ * @param modifier The modifier to apply to this composable.
+ */
 @Composable
 private fun TaskBottomSheetHeader(
     title: String,
@@ -157,7 +177,7 @@ private fun TaskBottomSheetHeader(
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close",
+                contentDescription = stringResource(id = R.string.close_button_content_description),
                 tint = TextPrimary,
                 modifier = Modifier.size(20.dp)
             )
@@ -175,6 +195,16 @@ private fun TaskBottomSheetHeader(
     }
 }
 
+/**
+ * A text field for entering the task title.
+ *
+ * @param label The label for the text field.
+ * @param value The current value of the text field.
+ * @param onValueChange A callback to be invoked when the value of the text field changes.
+ * @param placeholder The placeholder text to display when the text field is empty.
+ * @param singleLine Whether the text field should be a single line.
+ * @param modifier The modifier to apply to this composable.
+ */
 @Composable
 private fun TaskTextField(
     label: String,
@@ -225,6 +255,14 @@ private fun TaskTextField(
     }
 }
 
+/**
+ * A text field for entering the task description.
+ *
+ * @param value The current value of the text field.
+ * @param onValueChange A callback to be invoked when the value of the text field changes.
+ * @param placeholder The placeholder text to display when the text field is empty.
+ * @param modifier The modifier to apply to this composable.
+ */
 @Composable
 private fun TaskDescriptionField(
     value: String,
@@ -234,7 +272,7 @@ private fun TaskDescriptionField(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = "Description",
+            text = stringResource(id = R.string.task_bottom_sheet_description_label),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
             color = TextPrimary,
@@ -280,6 +318,13 @@ private fun TaskDescriptionField(
     }
 }
 
+/**
+ * A section for selecting the task due date.
+ *
+ * @param selectedDate The currently selected date.
+ * @param onDateClick A callback to be invoked when the date section is clicked.
+ * @param modifier The modifier to apply to this composable.
+ */
 @Composable
 private fun TaskDateSection(
     selectedDate: LocalDate?,
@@ -288,7 +333,7 @@ private fun TaskDateSection(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = "Due Date",
+            text = stringResource(id = R.string.task_bottom_sheet_due_date_label),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
             color = TextPrimary,
@@ -313,14 +358,14 @@ private fun TaskDateSection(
                         val month =
                             it.month.name.lowercase().replaceFirstChar { c -> c.uppercase() }
                         "$month ${it.dayOfMonth}, ${it.year}"
-                    } ?: "Select a date",
+                    } ?: stringResource(id = R.string.task_bottom_sheet_select_date_text),
                     color = if (selectedDate != null) TextPrimary else TextSecondary,
                     fontSize = 16.sp
                 )
 
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = "Select Date",
+                    contentDescription = stringResource(id = R.string.task_bottom_sheet_select_date_content_description),
                     tint = TextSecondary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -329,6 +374,13 @@ private fun TaskDateSection(
     }
 }
 
+/**
+ * A dialog for selecting a date.
+ *
+ * @param initialDate The initially selected date.
+ * @param onDateSelected A callback to be invoked when a date is selected.
+ * @param onDismiss A callback to be invoked when the dialog is dismissed.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 private fun TaskDatePickerDialog(
@@ -351,12 +403,12 @@ private fun TaskDatePickerDialog(
                     }
                 }
             ) {
-                Text("OK", color = PrimaryBlue)
+                Text(stringResource(id = R.string.dialog_ok_button), color = PrimaryBlue)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = TextSecondary)
+                Text(stringResource(id = R.string.dialog_cancel_button), color = TextSecondary)
             }
         }
     ) {
@@ -372,6 +424,9 @@ private fun TaskDatePickerDialog(
     }
 }
 
+/**
+ * A preview of the task bottom sheet.
+ */
 @Preview(showBackground = true)
 @Composable
 fun TaskBottomSheetPreview() {
@@ -384,6 +439,9 @@ fun TaskBottomSheetPreview() {
     }
 }
 
+/**
+ * A preview of the task bottom sheet in edit mode.
+ */
 @OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable

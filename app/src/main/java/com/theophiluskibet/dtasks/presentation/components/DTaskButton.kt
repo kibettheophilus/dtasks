@@ -16,6 +16,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.theophiluskibet.dtasks.presentation.ui.theme.PrimaryBlue
 
+/**
+ * A custom button for the app.
+ *
+ * @param onClick A callback to be invoked when the button is clicked.
+ * @param enabled Whether the button is enabled.
+ * @param text The text to display on the button.
+ * @param modifier The modifier to apply to this composable.
+ * @param isLoading Whether the button is in a loading state.
+ */
 @Composable
 fun DTaskButton(
     onClick: () -> Unit,

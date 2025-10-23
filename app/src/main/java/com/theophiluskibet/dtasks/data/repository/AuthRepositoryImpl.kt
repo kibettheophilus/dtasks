@@ -5,6 +5,12 @@ import com.theophiluskibet.dtasks.data.remote.api.AuthApi
 import com.theophiluskibet.dtasks.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * The implementation of the [AuthRepository] interface.
+ *
+ * @param authApi The [AuthApi] for making authentication requests.
+ * @param preferenceManager The [PreferenceManager] for storing the authentication token.
+ */
 class AuthRepositoryImpl(
     private val authApi: AuthApi,
     private val preferenceManager: PreferenceManager
@@ -24,12 +30,10 @@ class AuthRepositoryImpl(
                 else -> {
                     preferenceManager.updateIsLoggedIn(isLoggedIn = true)
                     Result.success(true)
-                    //  Result.failure(Exception(response.message()))
                 }
             }
         } catch (e: Exception) {
             preferenceManager.updateIsLoggedIn(isLoggedIn = true)
-            // return Result.failure(e)
             return Result.success(true)
         }
     }

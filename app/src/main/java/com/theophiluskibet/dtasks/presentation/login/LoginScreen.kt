@@ -32,6 +32,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.theophiluskibet.dtasks.R
 import com.theophiluskibet.dtasks.helpers.isValidEmail
 import com.theophiluskibet.dtasks.presentation.components.DTaskButton
 import com.theophiluskibet.dtasks.presentation.ui.theme.DTasksTheme
@@ -110,7 +112,7 @@ fun LoginScreenContent(
 
         // Sign In Title
         Text(
-            text = "Sign In",
+            text = stringResource(id = R.string.login_sign_in_title),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = TextPrimary,
@@ -121,7 +123,7 @@ fun LoginScreenContent(
 
         // Subtitle
         Text(
-            text = "Enter your email to login to your account.",
+            text = stringResource(id = R.string.login_subtitle),
             style = MaterialTheme.typography.bodyLarge,
             color = TextSecondary,
             textAlign = TextAlign.Center,
@@ -166,7 +168,7 @@ fun LoginScreenContent(
             },
             enabled = canLogin,
             isLoading = isLoading,
-            text = "Login"
+            text = stringResource(id = R.string.login_button_text)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -190,7 +192,7 @@ private fun LoginHeader(
         modifier = modifier
     ) {
         Text(
-            text = "Dtasks",
+            text = stringResource(id = R.string.login_app_name),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = TextPrimary,
@@ -223,7 +225,7 @@ private fun LoginEmailField(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Email",
+            text = stringResource(id = R.string.login_email_label),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
             color = TextPrimary,
@@ -238,14 +240,14 @@ private fun LoginEmailField(
                 .focusRequester(focusRequester),
             placeholder = {
                 Text(
-                    text = "Enter your email",
+                    text = stringResource(id = R.string.login_email_placeholder),
                     color = TextSecondary
                 )
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
-                    contentDescription = "Email",
+                    contentDescription = stringResource(id = R.string.login_email_label),
                     tint = if (isError) MaterialTheme.colorScheme.error else TextSecondary
                 )
             },
@@ -301,7 +303,7 @@ fun LoginScreenLoadingPreview() {
 fun LoginScreenErrorPreview() {
     DTasksTheme {
         LoginScreenContent(
-            errorMessage = "Invalid email address. Please try again."
+            errorMessage = stringResource(id = R.string.login_error_message)
         )
     }
 }

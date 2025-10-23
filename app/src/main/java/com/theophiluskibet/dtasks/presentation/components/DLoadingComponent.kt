@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.theophiluskibet.dtasks.presentation.ui.theme.PrimaryBlue
 
+/**
+ * A composable that displays a loading indicator.
+ */
 @Composable
 fun DLoadingComponent() {
     Box(

@@ -16,6 +16,9 @@ import com.theophiluskibet.dtasks.presentation.ui.theme.DTasksTheme
 import com.theophiluskibet.dtasks.sync.triggerImmediateSync
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * The main activity for the app.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * The main composable for the app.
+ *
+ * @param viewModel The [MainViewModel] for this screen.
+ */
 @Composable
 fun DTasksApp(
     viewModel: MainViewModel = koinViewModel()

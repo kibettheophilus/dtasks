@@ -4,8 +4,8 @@ import com.theophiluskibet.dtasks.data.local.entity.TaskEntity
 import com.theophiluskibet.dtasks.data.remote.models.TaskDto
 import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.helpers.asLocalDateTime
-import kotlinx.datetime.Instant
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * Converts a [TaskEntity] to a [TaskModel].
