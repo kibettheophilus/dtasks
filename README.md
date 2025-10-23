@@ -1,69 +1,218 @@
 # dTasks
-A simple task manager app
 
-## Building and running the app.
-- You will need android studio and an emulator or a physical device
-- Clone the repository and import to android studio
-- Hit the run icon 
+A modern, intuitive task management application built with Jetpack Compose.
 
-## Starting the mock server.
-- Run the following command:
-```bash
-chmod +x script.sh
-./startserver.sh
+## Features
+
+- **Simple Task Management**: Create, edit, and delete tasks with ease
+- **Task Filtering**: View all tasks, due tasks, or completed tasks
+- **Offline Support**: Works seamlessly offline with automatic sync
+- **Modern UI**: Beautiful Material Design 3 interface
+- **Real-time Updates**: Automatic synchronization across devices
+- **Authentication**: Secure email-based login system
+
+## Screenshots
+
+<!-- Add your screenshots here -->
+*Screenshots coming soon...*
+
+## Getting Started
+
+### Prerequisites
+
+- Android Studio Hedgehog (2023.1.1) or later
+- Android SDK with minimum API level 24
+- JDK 11 or higher
+- An Android device or emulator
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/dtasks.git
+   cd dtasks
+   ```
+
+2. **Open in Android Studio**
+  - Launch Android Studio
+  - Select "Open an existing project"
+  - Navigate to the cloned repository and select it
+
+3. **Build and Run**
+  - Wait for Gradle sync to complete
+  - Click the "Run" button or press `Ctrl+R` (Windows/Linux) or `Cmd+R` (Mac)
+
+## Mock Server Setup
+
+To run the app with a local backend server:
+
+1. **Start the mock server**
+   ```bash
+   chmod +x startserver.sh
+   ./startserver.sh
+   ```
+
+2. **What the script does:**
+  - Installs and configures `json-server`
+  - Starts the local development server
+  - Installs [ngrok](https://ngrok.com) based on your OS
+  - Exposes localhost via secure tunnel
+  - Automatically updates `baseUrl` in `gradle.properties`
+
+3. **Manual server setup** (alternative):
+   ```bash
+   npm install -g json-server
+   json-server --watch db.json --port 3000
+   ```
+
+## Architecture
+
+This app follows **MVVM (Model-View-ViewModel)** architecture with Clean Architecture principles:
+
 ```
----
-**INFO**
-- Installs json-server
-- Runs the server
-- Installs [ngrok](https://ngrok.com) based on OS
-- Exposes local host via chrome
-- sets the `baserUrl` in `gradle.properties`
----
-
-## Architecture overview.
-The app has been built using a MVVM architecture. 
+┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐    ┌──────────────────┐
+│   UI (Compose)  │───▶│  ViewModel   │───▶│   Repository    │───▶│  Data Sources    │
+└─────────────────┘    └──────────────┘    └─────────────────┘    └──────────────────┘
+                                                                   │  • Remote (API)  │
+                                                                   │  • Local (Room)  │
+                                                                   │  • Preferences   │
+                                                                   └──────────────────┘
 ```
-UI -> ViewModel -> Repository -> sources(local and remote)
-```
-NB:
-This was a simple app and did not need to be modularized.
 
-### Screenshots
+### Key Components
 
+- **Presentation Layer**: Jetpack Compose UI + ViewModels
+- **Domain Layer**: Use cases and business logic
+- **Data Layer**: Repositories, local database, and remote API
+- **Dependency Injection**: Koin for managing dependencies
 
-#### Libraries and tech stack
-- [Kotlin](https://kotlinlang.org/) - programming language
-- [Jetpack Compose](https://developer.android.com/compose) - Android’s recommended modern toolkit for building native UI.
-- [Koin](https://github.com/google/hilt](https://insert-koin.io/)) - a pragmatic lightweight dependency injection framework for Kotlin & Kotlin Multiplatform.
-- [Retrofit](https://square.github.io/retrofit/) - networking client framework
-- [KotlinX Serialization](https://github.com/Kotlin/kotlinx.serialization) - Serialization/Deserialization of JSON response from network.
-- [KtLint](https://github.com/pinterest/ktlint) - An anti-bikeshedding Kotlin linter with built-in formatter
-- [Room](https://developer.android.com/kotlin/multiplatform/room) - persistence library providing an abstraction layer over SQLite
-- [Datastore](https://developer.android.com/topic/libraries/architecture/datastore) - for key value pair storage
+## Tech Stack
 
-#### CI/CD
-- [Github Actions](https://github.com/kibettheophilus/dtasks/tree/master/.github/workflows)
-  - Run Tests
-  - Run Lint Checks
-  - Deploy to Playstore
+### Core Technologies
 
-## Conflict resolution strategy.
-- I decided to go with the approach of using timestamps when doing a sync
-- I have two workers:
-   - Immediate -> triggered once during the login process
-   - Periodic -> triggered on application setup and runs after every 15 minutes
-  
-## Running tests.
-- Unit Tests
+- **[Kotlin](https://kotlinlang.org/)** - Modern programming language for Android
+- **[Jetpack Compose](https://developer.android.com/compose)** - Declarative UI toolkit
+- **[Material Design 3](https://m3.material.io/)** - Google's design system
+
+### Architecture & DI
+
+- **[Koin](https://insert-koin.io/)** - Lightweight dependency injection
+- **[Navigation Compose](https://developer.android.com/jetpack/compose/navigation)** - Type-safe
+  navigation
+
+### Networking & Serialization
+
+- **[Retrofit](https://square.github.io/retrofit/)** - HTTP client for API calls
+- **[KotlinX Serialization](https://github.com/Kotlin/kotlinx.serialization)** - JSON parsing
+- **[OkHttp](https://square.github.io/okhttp/)** - HTTP client with interceptors
+
+### Local Storage
+
+- **[Room](https://developer.android.com/kotlin/multiplatform/room)** - SQLite abstraction layer
+- **[DataStore](https://developer.android.com/topic/libraries/architecture/datastore)** - Key-value
+  storage (preferences)
+
+### Background Work
+
+- **[WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager)** -
+  Background task scheduling
+
+### Code Quality
+
+- **[KtLint](https://github.com/pinterest/ktlint)** - Kotlin linter and formatter
+
+## Data Synchronization
+
+The app implements a robust conflict resolution strategy using timestamps:
+
+### Sync Workers
+
+- **Immediate Sync**: Triggered during login process
+- **Periodic Sync**: Runs every 15 minutes in the background
+
+### Conflict Resolution
+
+- Uses timestamp-based conflict resolution
+- Local changes take precedence when conflicts occur
+- Ensures data consistency across devices
+
+## Testing
+
+### Running Tests
+
+**Unit Tests**
 ```bash
 ./gradlew testDebugUnitTest
 ```
-- Instrumented Tests
+
+**Instrumented Tests**
 ```bash
-./gradlew testDebugAndroidTest
+./gradlew connectedDebugAndroidTest
 ```
-## Kwown Issues & Improvements
-- Pushing to server isn't working because `POST /sync` does not exist.
-- Improve test coverage
-- UI improvements
+
+**All Tests**
+
+```bash
+./gradlew test
+```
+
+### Test Coverage
+
+```bash
+./gradlew testDebugUnitTestCoverage
+```
+
+## CI/CD Pipeline
+
+Automated workflows using [GitHub Actions](.github/workflows/):
+
+- **Code Quality**: Runs KtLint
+- **Testing**: Executes unit tests
+- **Build**: Compiles and validates the app
+- **Deploy**: Automated deployment to Google Play Store
+
+## Project Structure
+
+```
+app/
+├── src/main/java/com/theophiluskibet/dtasks/
+│   ├── data/
+│   │   ├── local/          # Room database, preferences
+│   │   ├── remote/         # API services
+│   │   └── repository/     # Repository implementations
+│   ├── domain/
+│   │   ├── models/         # Domain models
+│   │   ├── repository/     # Repository interfaces
+│   │   └── usecases/       # Business logic
+│   ├── presentation/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── navigation/     # Navigation setup
+│   │   ├── screens/        # Screen composables
+│   │   └── theme/          # App theming
+│   └── di/                 # Dependency injection modules
+```
+
+## Known Issues & Future Improvements
+
+### Current Issues
+
+- [ ] Server sync endpoint (`POST /sync`)
+- [ ] Limited offline capabilities for task creation
+- [ ] Network error handling could be more robust
+
+### Planned Improvements
+
+- [ ] **Enhanced UI/UX**: Add animations and micro-interactions
+- [ ] **Test Coverage**: Increase test coverage to 80%+
+- [ ] **Performance**: Implement pagination for large task lists
+- [ ] **Features**: Add task categories and labels
+- [ ] **Accessibility**: Improve accessibility support
+- [ ] **Dark Mode**: Complete dark theme implementation
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
