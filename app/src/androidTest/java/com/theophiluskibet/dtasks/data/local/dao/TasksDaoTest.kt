@@ -6,6 +6,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.theophiluskibet.dtasks.data.local.database.TasksDatabase
 import com.theophiluskibet.dtasks.data.local.entity.TaskEntity
+import com.theophiluskibet.dtasks.helpers.LocalDateTime
+import com.theophiluskibet.dtasks.helpers.asEpochMilliseconds
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -14,6 +16,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
 
 @RunWith(AndroidJUnit4::class)
 class TasksDaoTest {
@@ -21,14 +26,17 @@ class TasksDaoTest {
     private lateinit var database: TasksDatabase
     private lateinit var tasksDao: TasksDao
 
+    @OptIn(ExperimentalTime::class)
+    private val time = Clock.System.now().LocalDateTime.asEpochMilliseconds()
+
     private val sampleTask = TaskEntity(
         id = "task-1",
         title = "Test Task",
         description = "This is a test task",
-        dueDate = Date(),
+        dueDate = time,
         isCompleted = false,
-        createdAt = "2023-01-01T00:00:00Z",
-        updatedAt = "2023-01-01T00:00:00Z"
+        createdAt = time,
+        updatedAt = time
     )
 
     @Before
@@ -173,16 +181,18 @@ class TasksDaoTest {
         assertEquals(1, tasks.size) // Original task should still be there
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun getTasksBySyncTime_shouldReturnTasksAfterGivenTime() = runTest {
         // Given
         val oldTask = sampleTask.copy(
             id = "old-task",
-            updatedAt = "1000" // Old timestamp
+            updatedAt = time // Old timestamp
         )
         val newTask = sampleTask.copy(
             id = "new-task",
-            updatedAt = "2000" // New timestamp
+            updatedAt = Clock.System.now()
+                .plus(1.hours).LocalDateTime.asEpochMilliseconds() // New timestamp
         )
 
         tasksDao.insertTask(oldTask)
@@ -199,7 +209,7 @@ class TasksDaoTest {
     @Test
     fun getTasksBySyncTime_noTasksAfterTime_shouldReturnEmptyList() = runTest {
         // Given
-        val oldTask = sampleTask.copy(updatedAt = "1000")
+        val oldTask = sampleTask.copy(updatedAt = time)
         tasksDao.insertTask(oldTask)
 
         // When
