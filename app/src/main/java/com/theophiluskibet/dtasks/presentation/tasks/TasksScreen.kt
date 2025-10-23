@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,6 +58,7 @@ import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.domain.models.isDue
 import com.theophiluskibet.dtasks.helpers.LocalDateTime
 import com.theophiluskibet.dtasks.helpers.formatDueDate
+import com.theophiluskibet.dtasks.presentation.components.DLoadingComponent
 import com.theophiluskibet.dtasks.presentation.task.TaskBottomSheet
 import com.theophiluskibet.dtasks.presentation.ui.theme.BackgroundGray
 import com.theophiluskibet.dtasks.presentation.ui.theme.DTasksTheme
@@ -88,7 +91,8 @@ fun TasksScreen(
         onTaskEdit = viewModel::editTask,
         onAddTask = viewModel::addTask,
         onSaveTask = viewModel::saveTask,
-        onHideBottomSheet = viewModel::hideBottomSheet
+        onHideBottomSheet = viewModel::hideBottomSheet,
+        onRetry = viewModel::retryLoadingTasks
     )
 }
 
@@ -102,7 +106,8 @@ fun TasksScreenContent(
     onTaskEdit: (TaskModel) -> Unit = {},
     onAddTask: () -> Unit = {},
     onSaveTask: (TaskModel) -> Unit = {},
-    onHideBottomSheet: () -> Unit = {}
+    onHideBottomSheet: () -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
     var selectedFilter by remember { mutableStateOf(TaskFilter.ALL) }
 
@@ -186,33 +191,51 @@ fun TasksScreenContent(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-                if (hasIncompleteTasks || selectedFilter == TaskFilter.COMPLETED) {
-                    // Task List
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(filteredTasks) { task ->
-                            TaskItem(
-                                task = task,
-                                onTaskClick = { onTaskClick(task) },
-                                onTaskComplete = { onTaskComplete(task) },
-                                onTaskDelete = { onTaskDelete(task) },
-                                onTaskEdit = { onTaskEdit(task) }
-                            )
-                        }
+                when {
+                    uiState.isLoading -> {
+                        // Loading State
+                        DLoadingComponent()
+                    }
 
-                        item {
-                            Spacer(modifier = Modifier.height(80.dp))
+                    uiState.errorMessage != null -> {
+                        // Error State
+                        ErrorContent(
+                            errorMessage = uiState.errorMessage,
+                            onRetry = onRetry,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+
+                    hasIncompleteTasks || selectedFilter == TaskFilter.COMPLETED -> {
+                        // Task List
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(filteredTasks) { task ->
+                                TaskItem(
+                                    task = task,
+                                    onTaskClick = { onTaskClick(task) },
+                                    onTaskComplete = { onTaskComplete(task) },
+                                    onTaskDelete = { onTaskDelete(task) },
+                                    onTaskEdit = { onTaskEdit(task) }
+                                )
+                            }
+
+                            item {
+                                Spacer(modifier = Modifier.height(80.dp))
+                            }
                         }
                     }
-                } else {
-                    // Empty State
-                    AllTasksCompletedContent(
-                        modifier = Modifier.align(Alignment.Center),
-                        onAddTask = onAddTask
-                    )
+
+                    else -> {
+                        // Empty State
+                        AllTasksCompletedContent(
+                            modifier = Modifier.align(Alignment.Center),
+                            onAddTask = onAddTask
+                        )
+                    }
                 }
             }
         }
@@ -415,6 +438,72 @@ enum class TaskFilter(val displayName: String) {
     COMPLETED("Completed"),
 }
 
+@Composable
+fun ErrorContent(
+    errorMessage: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Error Icon
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(
+                    DeleteRed.copy(alpha = 0.1f),
+                    CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add, // You might want to use an error icon here
+                contentDescription = "Error",
+                tint = DeleteRed,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Oops! Something went wrong",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = TextPrimary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = errorMessage,
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary,
+            textAlign = TextAlign.Center,
+            lineHeight = 20.sp
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onRetry,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryBlue
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = "Try Again",
+                color = Color.White,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
@@ -473,6 +562,28 @@ fun TasksScreenEmptyPreview() {
                     updatedAt = Clock.System.now().LocalDateTime
                 )
             )
+        )
+        TasksScreenContent(uiState = uiState)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TasksScreenLoadingPreview() {
+    DTasksTheme {
+        val uiState = TasksUiState(
+            isLoading = true
+        )
+        TasksScreenContent(uiState = uiState)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TasksScreenErrorPreview() {
+    DTasksTheme {
+        val uiState = TasksUiState(
+            errorMessage = "Failed to load tasks. Please check your internet connection and try again."
         )
         TasksScreenContent(uiState = uiState)
     }

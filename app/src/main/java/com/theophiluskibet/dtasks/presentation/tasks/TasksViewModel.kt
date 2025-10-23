@@ -25,9 +25,24 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
 
     private fun getTasks() {
         viewModelScope.launch {
-            tasksRepository.getTasks()?.collect { tasks ->
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            try {
+                tasksRepository.getTasks()?.collect { tasks ->
+                    _uiState.update {
+                        it.copy(
+                            tasks = tasks,
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+            } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(tasks = tasks)
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "Failed to load tasks: ${e.message}"
+                    )
                 }
             }
         }
@@ -88,6 +103,10 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
     fun onTaskClick(task: TaskModel) {
         // Navigate to task details or edit
         editTask(task)
+    }
+
+    fun retryLoadingTasks() {
+        getTasks()
     }
 }
 
