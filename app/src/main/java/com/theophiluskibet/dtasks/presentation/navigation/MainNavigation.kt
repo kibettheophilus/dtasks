@@ -13,10 +13,13 @@ fun MainNavigation(
     navController: NavHostController,
     isLoggedIn: Boolean
 ) {
+    // Use dynamic start destination based on login status
+    val startDestination = if (isLoggedIn) Destinations.Tasks else Destinations.Login
+
     NavHost(
         modifier = Modifier,
         navController = navController,
-        startDestination = if (isLoggedIn) Destinations.Tasks else Destinations.Login
+        startDestination = startDestination
     ) {
         composable<Destinations.Login> {
             LoginScreen(

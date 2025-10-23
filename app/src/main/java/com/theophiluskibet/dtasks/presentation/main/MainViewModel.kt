@@ -13,6 +13,6 @@ class MainViewModel(private val authRepository: AuthRepository): ViewModel() {
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
+            initialValue = null
         )
 }
