@@ -192,8 +192,8 @@ app/
 ### Current Issues
 
 - [ ] Server sync endpoint (`POST /sync`)
-- [ ] Limited offline capabilities for task creation
 - [ ] Network error handling could be more robust
+- [ ] Some flickers when filtering
 
 ### Planned Improvements
 
