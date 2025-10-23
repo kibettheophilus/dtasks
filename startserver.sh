@@ -131,8 +131,33 @@ fi
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║${NC}  ${YELLOW}Your ngrok URL is:${NC}                                      ${GREEN}║${NC}"
 echo -e "${GREEN}║${NC}  ${NGROK_URL}  ${GREEN}║${NC}"
-echo -e "${GREEN}║${NC}  ${YELLOW}add it to gradle.properties file${NC}  ${GREEN}║${NC}"
-echo -e "${GREEN}╚════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
+
+# Update gradle.properties
+GRADLE_PROPS="gradle.properties"
+if [ -f "$GRADLE_PROPS" ]; then
+    # Check if baseUrl already exists
+    if grep -q "^baseUrl=" "$GRADLE_PROPS"; then
+        # Update existing baseUrl
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS
+            sed -i '' "s|^baseUrl=.*|baseUrl=\"${NGROK_URL}/\"|" "$GRADLE_PROPS"
+        else
+            # Linux
+            sed -i "s|^baseUrl=.*|baseUrl=\"${NGROK_URL}/\"|" "$GRADLE_PROPS"
+        fi
+        echo -e "${GREEN}Updated baseUrl in gradle.properties${NC}"
+    else
+        # Add new baseUrl
+        echo "baseUrl=\"${NGROK_URL}/\"" >> "$GRADLE_PROPS"
+        echo -e "${GREEN}Added baseUrl to gradle.properties${NC}"
+    fi
+else
+    echo -e "${YELLOW}Warning: gradle.properties not found. Creating it...${NC}"
+    echo "baseUrl=\"${NGROK_URL}/\"" > "$GRADLE_PROPS"
+    echo -e "${GREEN}Created gradle.properties with baseUrl${NC}"
+fi
+
 echo -e "\n${YELLOW}Press Ctrl+C to stop both services${NC}\n"
 
 # Keep script running
