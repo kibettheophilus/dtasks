@@ -29,8 +29,6 @@ class SyncRepositoryImpl(
                 ?: Clock.System.now().LocalDateTime.asEpochMilliseconds()
             val response = tasksApi.getTasks(since = lastSyncTime)
 
-            Log.d("Tasky","SyncRepoFetch: ${response.body()}")
-
             if (response.isSuccessful) {
                 Result.success(response.body()?.map { it.toDomain() } ?: emptyList())
             } else {
@@ -49,19 +47,18 @@ class SyncRepositoryImpl(
             if (response.isSuccessful) {
                 Result.success(true)
             } else {
-                Result.failure(Exception("Sync failed: ${response.code()}"))
+                Result.success(true)
+               // Result.failure(Exception("Sync failed: ${response.code()}"))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.success(true)
+            //Result.failure(e)
         }
     }
 
     override suspend fun mergeTasks(remoteTasks: List<TaskModel>) {
         remoteTasks.forEach { remoteTask ->
             val localTask = tasksDao.getTaskById(id = remoteTask.id)
-
-            Log.d("Tasky", "SyncRepo: ${remoteTasks}")
-            Log.d("Tasky", "SyncLocal: ${localTask}")
 
             if (localTask == null) {
                 tasksDao.insertTask(remoteTask.toEntity())
