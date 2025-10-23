@@ -7,14 +7,10 @@ A modern, intuitive task management application built with Jetpack Compose.
 - **Simple Task Management**: Create, edit, and delete tasks with ease
 - **Task Filtering**: View all tasks, due tasks, or completed tasks
 - **Offline Support**: Works seamlessly offline with automatic sync
-- **Modern UI**: Beautiful Material Design 3 interface
-- **Real-time Updates**: Automatic synchronization across devices
-- **Authentication**: Secure email-based login system
 
 ## Screenshots
 
-<!-- Add your screenshots here -->
-*Screenshots coming soon...*
+https://github.com/user-attachments/assets/1bd6e188-acc7-4f73-959d-57345f2cd85e
 
 ## Getting Started
 
@@ -82,7 +78,7 @@ This app follows **MVVM (Model-View-ViewModel)** architecture with Clean Archite
 ### Key Components
 
 - **Presentation Layer**: Jetpack Compose UI + ViewModels
-- **Domain Layer**: Use cases and business logic
+- **Domain Layer**: business logic
 - **Data Layer**: Repositories, local database, and remote API
 - **Dependency Injection**: Koin for managing dependencies
 
@@ -92,7 +88,6 @@ This app follows **MVVM (Model-View-ViewModel)** architecture with Clean Archite
 
 - **[Kotlin](https://kotlinlang.org/)** - Modern programming language for Android
 - **[Jetpack Compose](https://developer.android.com/compose)** - Declarative UI toolkit
-- **[Material Design 3](https://m3.material.io/)** - Google's design system
 
 ### Architecture & DI
 
