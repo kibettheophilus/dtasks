@@ -7,6 +7,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
 
+/**
+ * Converts a [TaskDto] to a [TaskModel].
+ *
+ * @return The converted [TaskModel].
+ */
 @OptIn(ExperimentalTime::class)
 fun TaskDto.toDomain() = TaskModel(
     id = id,

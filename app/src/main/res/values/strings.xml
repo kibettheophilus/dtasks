@@ -1,3 +1,44 @@
 <resources>
     <string name="app_name">dTasks</string>
+    <string name="login_sign_in_title">Sign In</string>
+    <string name="login_subtitle">Enter your email to login to your account.</string>
+    <string name="login_button_text">Login</string>
+    <string name="login_app_name">Dtasks</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_email_placeholder">Enter your email</string>
+    <string name="login_error_message">Invalid email address. Please try again.</string>
+
+    <string name="task_bottom_sheet_edit_title">Edit Task</string>
+    <string name="task_bottom_sheet_new_title">New Task</string>
+    <string name="task_bottom_sheet_title_label">Title</string>
+    <string name="task_bottom_sheet_title_placeholder">e.g., Buy groceries</string>
+    <string name="task_bottom_sheet_description_label">Description</string>
+    <string name="task_bottom_sheet_description_placeholder">e.g., Milk, eggs, bread</string>
+    <string name="task_bottom_sheet_due_date_label">Due Date</string>
+    <string name="task_bottom_sheet_select_date_text">Select a date</string>
+    <string name="task_bottom_sheet_select_date_content_description">Select Date</string>
+    <string name="dialog_ok_button">OK</string>
+    <string name="dialog_cancel_button">Cancel</string>
+    <string name="task_bottom_sheet_save_button">Save Task</string>
+    <string name="close_button_content_description">Close</string>
+
+    <string name="tasks_screen_title">My Tasks</string>
+    <string name="add_task_button_content_description">Add Task</string>
+    <string name="task_completed_content_description">Completed</string>
+    <string name="edit_task_button_content_description">Edit</string>
+    <string name="delete_task_button_content_description">Delete</string>
+    <string name="all_tasks_completed_icon_content_description">All Complete</string>
+    <string name="all_tasks_completed_message">All tasks completed!</string>
+    <string name="add_new_task_prompt">Tap \'+\' to add a new one.</string>
+    <string name="task_filter_all">All</string>
+    <string name="task_filter_due">Due</string>
+    <string name="task_filter_completed">Completed</string>
+    <string name="error_icon_content_description">Error</string>
+    <string name="error_message_title">Oops! Something went wrong</string>
+    <string name="retry_button_text">Try Again</string>
+    <string name="sample_task_1_title">Finish design mockups</string>
+    <string name="sample_task_2_title">Call the plumber</string>
+    <string name="sample_task_3_title">Buy groceries</string>
+    <string name="sample_completed_task_title">Sample completed task</string>
+    <string name="tasks_error_message">Failed to load tasks. Please check your internet connection and try again.</string>
 </resources>

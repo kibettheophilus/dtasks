@@ -15,6 +15,9 @@ import androidx.work.WorkerParameters
 import com.theophiluskibet.dtasks.domain.repository.SyncRepository
 import java.util.concurrent.TimeUnit
 
+/**
+ * Constraints for the sync worker, requiring network, battery, and storage.
+ */
 private val constraints =
     Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -22,7 +25,9 @@ private val constraints =
         .setRequiresStorageNotLow(true)
         .build()
 
-
+/**
+ * Schedules a periodic sync of tasks.
+ */
 fun Context.schedulePeriodicSync() {
     val syncWorkRequest = PeriodicWorkRequestBuilder<SyncTasksWorker>(
         15, TimeUnit.MINUTES
@@ -42,7 +47,9 @@ fun Context.schedulePeriodicSync() {
     )
 }
 
-
+/**
+ * Triggers an immediate sync of tasks.
+ */
 fun Context.triggerImmediateSync() {
     val syncWorkRequest = OneTimeWorkRequestBuilder<SyncTasksWorker>()
         .setConstraints(constraints)
@@ -55,6 +62,13 @@ fun Context.triggerImmediateSync() {
     )
 }
 
+/**
+ * A [CoroutineWorker] that syncs tasks between the local database and the remote server.
+ *
+ * @param context The application context.
+ * @param params The worker parameters.
+ * @param syncRepository The repository for handling syncing.
+ */
 class SyncTasksWorker(
     context: Context,
     params: WorkerParameters,

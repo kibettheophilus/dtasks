@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,16 +48,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.theophiluskibet.dtasks.R
 import com.theophiluskibet.dtasks.domain.models.TaskModel
 import com.theophiluskibet.dtasks.domain.models.isDue
 import com.theophiluskibet.dtasks.helpers.LocalDateTime
 import com.theophiluskibet.dtasks.helpers.formatDueDate
+import com.theophiluskibet.dtasks.presentation.components.DLoadingComponent
 import com.theophiluskibet.dtasks.presentation.task.TaskBottomSheet
 import com.theophiluskibet.dtasks.presentation.ui.theme.BackgroundGray
 import com.theophiluskibet.dtasks.presentation.ui.theme.DTasksTheme
@@ -73,6 +78,12 @@ import org.koin.androidx.compose.koinViewModel
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/**
+ * A composable that provides the UI for the tasks screen.
+ *
+ * @param modifier The modifier to apply to this composable.
+ * @param viewModel The [TasksViewModel] for this screen.
+ */
 @Composable
 fun TasksScreen(
     modifier: Modifier = Modifier,
@@ -88,10 +99,24 @@ fun TasksScreen(
         onTaskEdit = viewModel::editTask,
         onAddTask = viewModel::addTask,
         onSaveTask = viewModel::saveTask,
-        onHideBottomSheet = viewModel::hideBottomSheet
+        onHideBottomSheet = viewModel::hideBottomSheet,
+        onRetry = viewModel::retryLoadingTasks
     )
 }
 
+/**
+ * The main content of the tasks screen.
+ *
+ * @param uiState The [TasksUiState] for this screen.
+ * @param onTaskClick A callback to be invoked when a task is clicked.
+ * @param onTaskComplete A callback to be invoked when a task is marked as complete.
+ * @param onTaskDelete A callback to be invoked when a task is deleted.
+ * @param onTaskEdit A callback to be invoked when a task is edited.
+ * @param onAddTask A callback to be invoked when the add task button is clicked.
+ * @param onSaveTask A callback to be invoked when a task is saved.
+ * @param onHideBottomSheet A callback to be invoked when the bottom sheet is hidden.
+ * @param onRetry A callback to be invoked when the user retries loading the tasks.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TasksScreenContent(
@@ -102,7 +127,8 @@ fun TasksScreenContent(
     onTaskEdit: (TaskModel) -> Unit = {},
     onAddTask: () -> Unit = {},
     onSaveTask: (TaskModel) -> Unit = {},
-    onHideBottomSheet: () -> Unit = {}
+    onHideBottomSheet: () -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
     var selectedFilter by remember { mutableStateOf(TaskFilter.ALL) }
 
@@ -124,7 +150,7 @@ fun TasksScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "My Tasks",
+                        text = stringResource(id = R.string.tasks_screen_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = TextPrimary
@@ -141,7 +167,7 @@ fun TasksScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add Task",
+                            contentDescription = stringResource(id = R.string.add_task_button_content_description),
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -186,33 +212,51 @@ fun TasksScreenContent(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-                if (hasIncompleteTasks || selectedFilter == TaskFilter.COMPLETED) {
-                    // Task List
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(filteredTasks) { task ->
-                            TaskItem(
-                                task = task,
-                                onTaskClick = { onTaskClick(task) },
-                                onTaskComplete = { onTaskComplete(task) },
-                                onTaskDelete = { onTaskDelete(task) },
-                                onTaskEdit = { onTaskEdit(task) }
-                            )
-                        }
+                when {
+                    uiState.isLoading -> {
+                        // Loading State
+                        DLoadingComponent()
+                    }
 
-                        item {
-                            Spacer(modifier = Modifier.height(80.dp))
+                    uiState.errorMessage != null -> {
+                        // Error State
+                        ErrorContent(
+                            errorMessage = uiState.errorMessage,
+                            onRetry = onRetry,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+
+                    hasIncompleteTasks || selectedFilter == TaskFilter.COMPLETED -> {
+                        // Task List
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(filteredTasks) { task ->
+                                TaskItem(
+                                    task = task,
+                                    onTaskClick = { onTaskClick(task) },
+                                    onTaskComplete = { onTaskComplete(task) },
+                                    onTaskDelete = { onTaskDelete(task) },
+                                    onTaskEdit = { onTaskEdit(task) }
+                                )
+                            }
+
+                            item {
+                                Spacer(modifier = Modifier.height(80.dp))
+                            }
                         }
                     }
-                } else {
-                    // Empty State
-                    AllTasksCompletedContent(
-                        modifier = Modifier.align(Alignment.Center),
-                        onAddTask = onAddTask
-                    )
+
+                    else -> {
+                        // Empty State
+                        AllTasksCompletedContent(
+                            modifier = Modifier.align(Alignment.Center),
+                            onAddTask = onAddTask
+                        )
+                    }
                 }
             }
         }
@@ -227,6 +271,16 @@ fun TasksScreenContent(
     }
 }
 
+/**
+ * A composable that displays a single task item.
+ *
+ * @param task The task to display.
+ * @param onTaskClick A callback to be invoked when the task is clicked.
+ * @param onTaskComplete A callback to be invoked when the task is marked as complete.
+ * @param onTaskDelete A callback to be invoked when the task is deleted.
+ * @param onTaskEdit A callback to be invoked when the task is edited.
+ * @param modifier The modifier to apply to this composable.
+ */
 @Composable
 fun TaskItem(
     task: TaskModel,
@@ -271,7 +325,7 @@ fun TaskItem(
                 if (task.isCompleted) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Completed",
+                        contentDescription = stringResource(id = R.string.task_completed_content_description),
                         tint = Color.White,
                         modifier = Modifier.size(16.dp)
                     )
@@ -333,7 +387,7 @@ fun TaskItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit",
+                        contentDescription = stringResource(id = R.string.edit_task_button_content_description),
                         tint = if (task.isCompleted)
                             TextSecondary.copy(alpha = 0.5f)
                         else
@@ -348,7 +402,7 @@ fun TaskItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(id = R.string.delete_task_button_content_description),
                         tint = if (task.isCompleted)
                             DeleteRed.copy(alpha = 0.5f)
                         else
@@ -361,6 +415,12 @@ fun TaskItem(
     }
 }
 
+/**
+ * A composable that displays a message indicating that all tasks are completed.
+ *
+ * @param modifier The modifier to apply to this composable.
+ * @param onAddTask A callback to be invoked when the add task button is clicked.
+ */
 @Composable
 fun AllTasksCompletedContent(
     modifier: Modifier = Modifier,
@@ -382,7 +442,7 @@ fun AllTasksCompletedContent(
         ) {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "All Complete",
+                contentDescription = stringResource(id = R.string.all_tasks_completed_icon_content_description),
                 tint = Color.White,
                 modifier = Modifier.size(60.dp)
             )
@@ -391,7 +451,7 @@ fun AllTasksCompletedContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "All tasks completed!",
+            text = stringResource(id = R.string.all_tasks_completed_message),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = TextPrimary,
@@ -401,7 +461,7 @@ fun AllTasksCompletedContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Tap '+' to add a new one.",
+            text = stringResource(id = R.string.add_new_task_prompt),
             style = MaterialTheme.typography.bodyLarge,
             color = TextSecondary,
             textAlign = TextAlign.Center
@@ -409,12 +469,93 @@ fun AllTasksCompletedContent(
     }
 }
 
+/**
+ * An enum representing the different task filters.
+ *
+ * @param displayName The display name of the filter.
+ */
 enum class TaskFilter(val displayName: String) {
-    ALL("All"),
-    DUE("Due"),
-    COMPLETED("Completed"),
+    ALL(displayName = "All"),
+    DUE(displayName = "Due"),
+    COMPLETED(displayName = "Completed"),
 }
 
+/**
+ * A composable that displays an error message.
+ *
+ * @param errorMessage The error message to display.
+ * @param onRetry A callback to be invoked when the retry button is clicked.
+ * @param modifier The modifier to apply to this composable.
+ */
+@Composable
+fun ErrorContent(
+    errorMessage: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Error Icon
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(
+                    DeleteRed.copy(alpha = 0.1f),
+                    CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add, // You might want to use an error icon here
+                contentDescription = stringResource(id = R.string.error_icon_content_description),
+                tint = DeleteRed,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = stringResource(id = R.string.error_message_title),
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = TextPrimary,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = errorMessage,
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary,
+            textAlign = TextAlign.Center,
+            lineHeight = 20.sp
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onRetry,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryBlue
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.retry_button_text),
+                color = Color.White,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+/**
+ * A preview of the tasks screen.
+ */
 @OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
@@ -428,7 +569,7 @@ fun TasksScreenPreview() {
         val sampleTasks = listOf(
             TaskModel(
                 id = "1",
-                title = "Finish design mockups",
+                title = stringResource(id = R.string.sample_task_1_title),
                 dueDate = today.LocalDateTime,
                 isCompleted = false,
                 createdAt = today.LocalDateTime,
@@ -436,7 +577,7 @@ fun TasksScreenPreview() {
             ),
             TaskModel(
                 id = "2",
-                title = "Call the plumber",
+                title = stringResource(id = R.string.sample_task_2_title),
                 dueDate = tomorrow.LocalDateTime,
                 isCompleted = false,
                 createdAt = today.LocalDateTime,
@@ -444,7 +585,7 @@ fun TasksScreenPreview() {
             ),
             TaskModel(
                 id = "3",
-                title = "Buy groceries",
+                title = stringResource(id = R.string.sample_task_3_title),
                 dueDate = futureDate.LocalDateTime,
                 isCompleted = true,
                 createdAt = today.LocalDateTime,
@@ -457,6 +598,9 @@ fun TasksScreenPreview() {
     }
 }
 
+/**
+ * A preview of the tasks screen in an empty state.
+ */
 @OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
@@ -466,13 +610,41 @@ fun TasksScreenEmptyPreview() {
             tasks = listOf(
                 TaskModel(
                     id = "1",
-                    title = "Sample completed task",
+                    title = stringResource(id = R.string.sample_completed_task_title),
                     dueDate = Clock.System.now().LocalDateTime,
                     isCompleted = true,
                     createdAt = Clock.System.now().LocalDateTime,
                     updatedAt = Clock.System.now().LocalDateTime
                 )
             )
+        )
+        TasksScreenContent(uiState = uiState)
+    }
+}
+
+/**
+ * A preview of the tasks screen in a loading state.
+ */
+@Preview(showBackground = true)
+@Composable
+fun TasksScreenLoadingPreview() {
+    DTasksTheme {
+        val uiState = TasksUiState(
+            isLoading = true
+        )
+        TasksScreenContent(uiState = uiState)
+    }
+}
+
+/**
+ * A preview of the tasks screen with an error message.
+ */
+@Preview(showBackground = true)
+@Composable
+fun TasksScreenErrorPreview() {
+    DTasksTheme {
+        val uiState = TasksUiState(
+            errorMessage = stringResource(id = R.string.tasks_error_message)
         )
         TasksScreenContent(uiState = uiState)
     }

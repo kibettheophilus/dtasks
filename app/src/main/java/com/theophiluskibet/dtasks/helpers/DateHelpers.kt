@@ -15,20 +15,35 @@ import kotlin.time.Instant
 
 private val timeZone = TimeZone.currentSystemDefault()
 
+/**
+ * Converts an [Instant] to a [LocalDateTime] in the current system time zone.
+ */
 @OptIn(ExperimentalTime::class)
 val Instant.LocalDateTime: LocalDateTime
     get() = toLocalDateTime(timeZone)
 
+/**
+ * Converts a [LocalDateTime] to an [Instant] in the current system time zone.
+ */
 @OptIn(ExperimentalTime::class)
 val LocalDateTime.Instant: Instant
     get() = toInstant(timeZone)
 
+/**
+ * Converts a [LocalDateTime] to epoch milliseconds.
+ */
 @OptIn(ExperimentalTime::class)
 fun LocalDateTime.asEpochMilliseconds(): Long = this.Instant.toEpochMilliseconds()
 
+/**
+ * Converts epoch milliseconds to a [LocalDateTime].
+ */
 @OptIn(ExperimentalTime::class)
 fun Long.asLocalDateTime(): LocalDateTime = Instant.fromEpochMilliseconds(this).LocalDateTime
 
+/**
+ * Formats a nullable [LocalDateTime] into a human-readable due date string.
+ */
 @OptIn(ExperimentalTime::class)
 fun LocalDateTime?.formatDueDate(): String {
     if (this == null) return "No due date"
@@ -53,17 +68,3 @@ fun LocalDateTime?.formatDueDate(): String {
         })
     }
 }
-
-@OptIn(ExperimentalTime::class)
-fun String.asLocalDateTime(): LocalDateTime {
-    val localDateTime = LocalDateTime.parse(this)
-    val instant = localDateTime.toInstant(timeZone)
-    return instant.LocalDateTime
-}
-
-@OptIn(ExperimentalTime::class)
-fun Long.asString(): String {
-    val instant = Instant.fromEpochMilliseconds(this)
-    return instant.toString()
-}
-

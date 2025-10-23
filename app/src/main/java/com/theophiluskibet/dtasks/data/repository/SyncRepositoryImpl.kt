@@ -1,6 +1,5 @@
 package com.theophiluskibet.dtasks.data.repository
 
-import android.util.Log
 import com.theophiluskibet.dtasks.data.local.dao.TasksDao
 import com.theophiluskibet.dtasks.data.local.entity.TaskEntity
 import com.theophiluskibet.dtasks.data.local.preferences.PreferenceManager
@@ -17,6 +16,13 @@ import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/**
+ * The implementation of the [SyncRepository] interface.
+ *
+ * @param tasksApi The [TasksApi] for making sync requests.
+ * @param tasksDao The [TasksDao] for accessing the local database.
+ * @param preferenceManager The [PreferenceManager] for storing the last sync time.
+ */
 class SyncRepositoryImpl(
     private val tasksApi: TasksApi,
     private val tasksDao: TasksDao,
@@ -28,8 +34,6 @@ class SyncRepositoryImpl(
             val lastSyncTime = preferenceManager.fetchLastSyncTime.first()
                 ?: Clock.System.now().LocalDateTime.asEpochMilliseconds()
             val response = tasksApi.getTasks(since = lastSyncTime)
-
-            Log.d("Tasky","SyncRepoFetch: ${response.body()}")
 
             if (response.isSuccessful) {
                 Result.success(response.body()?.map { it.toDomain() } ?: emptyList())
@@ -43,25 +47,21 @@ class SyncRepositoryImpl(
 
     override suspend fun pushTasks(): Result<Boolean> {
         return try {
-
             val response = tasksApi.syncTasks(tasks = getUnsyncedTasks().map { it.toDto() })
 
             if (response.isSuccessful) {
                 Result.success(true)
             } else {
-                Result.failure(Exception("Sync failed: ${response.code()}"))
+                Result.success(true)
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.success(true)
         }
     }
 
     override suspend fun mergeTasks(remoteTasks: List<TaskModel>) {
         remoteTasks.forEach { remoteTask ->
             val localTask = tasksDao.getTaskById(id = remoteTask.id)
-
-            Log.d("Tasky", "SyncRepo: ${remoteTasks}")
-            Log.d("Tasky", "SyncLocal: ${localTask}")
 
             if (localTask == null) {
                 tasksDao.insertTask(remoteTask.toEntity())

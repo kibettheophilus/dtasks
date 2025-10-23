@@ -10,11 +10,21 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Login screen.
+ *
+ * @param authRepository The repository for handling authentication.
+ */
 class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
+    /**
+     * Attempts to log in the user with the given email.
+     *
+     * @param email The user's email address.
+     */
     fun login(email: String) {
         if (!email.isValidEmail()) {
             _uiState.update {
@@ -51,12 +61,18 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
+    /**
+     * Clears any error messages from the UI state.
+     */
     fun clearError() {
         _uiState.update {
             it.copy(errorMessage = null)
         }
     }
 
+    /**
+     * Resets the login state to its initial value.
+     */
     fun resetLoginState() {
         _uiState.update {
             it.copy(isLoginSuccessful = false)
@@ -64,6 +80,13 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 }
 
+/**
+ * Represents the UI state for the Login screen.
+ *
+ * @param isLoading Whether a login operation is in progress.
+ * @param isLoginSuccessful Whether the login was successful.
+ * @param errorMessage An error message to display if login fails.
+ */
 data class LoginUiState(
     val isLoading: Boolean = false,
     val isLoginSuccessful: Boolean = false,
