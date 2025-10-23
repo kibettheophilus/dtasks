@@ -47,6 +47,12 @@ import com.theophiluskibet.dtasks.presentation.ui.theme.TextPrimary
 import com.theophiluskibet.dtasks.presentation.ui.theme.TextSecondary
 import org.koin.androidx.compose.koinViewModel
 
+/**
+ * A composable that provides the UI for the login screen.
+ *
+ * @param onLoginSuccess A callback to be invoked when the login is successful.
+ * @param viewModel The [LoginViewModel] for this screen.
+ */
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
@@ -69,6 +75,13 @@ fun LoginScreen(
     )
 }
 
+/**
+ * The main content of the login screen.
+ *
+ * @param onLoginClick A callback to be invoked when the login button is clicked.
+ * @param isLoading Whether the screen is in a loading state.
+ * @param errorMessage An error message to display.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreenContent(
@@ -163,6 +176,11 @@ fun LoginScreenContent(
     }
 }
 
+/**
+ * A composable that displays the login screen header.
+ *
+ * @param modifier The modifier to apply to this composable.
+ */
 @Composable
 private fun LoginHeader(
     modifier: Modifier = Modifier
@@ -181,6 +199,16 @@ private fun LoginHeader(
     }
 }
 
+/**
+ * A composable that displays the email input field.
+ *
+ * @param email The current email value.
+ * @param onEmailChange A callback to be invoked when the email value changes.
+ * @param isError Whether the email field is in an error state.
+ * @param focusRequester The focus requester for this field.
+ * @param onImeAction A callback to be invoked when the IME action is triggered.
+ * @param modifier The modifier to apply to this composable.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginEmailField(
@@ -241,6 +269,9 @@ private fun LoginEmailField(
     }
 }
 
+/**
+ * A preview of the login screen.
+ */
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
@@ -249,6 +280,9 @@ fun LoginScreenPreview() {
     }
 }
 
+/**
+ * A preview of the login screen in a loading state.
+ */
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenLoadingPreview() {
@@ -259,6 +293,9 @@ fun LoginScreenLoadingPreview() {
     }
 }
 
+/**
+ * A preview of the login screen with an error message.
+ */
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenErrorPreview() {

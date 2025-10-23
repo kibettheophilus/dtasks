@@ -14,6 +14,11 @@ import java.util.*
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+/**
+ * ViewModel for the Tasks screen.
+ *
+ * @param tasksRepository The repository for accessing task data.
+ */
 class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TasksUiState())
@@ -23,6 +28,9 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         getTasks()
     }
 
+    /**
+     * Fetches the list of tasks from the repository and updates the UI state.
+     */
     private fun getTasks() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
@@ -48,6 +56,11 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         }
     }
 
+    /**
+     * Toggles the completion status of a task.
+     *
+     * @param task The task to update.
+     */
     @OptIn(ExperimentalTime::class)
     fun toggleTaskCompletion(task: TaskModel) {
         viewModelScope.launch {
@@ -60,12 +73,22 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         }
     }
 
+    /**
+     * Deletes a task.
+     *
+     * @param task The task to delete.
+     */
     fun deleteTask(task: TaskModel) {
         viewModelScope.launch {
             tasksRepository.deleteTask(id = task.id)
         }
     }
 
+    /**
+     * Shows the bottom sheet to edit a task.
+     *
+     * @param task The task to edit.
+     */
     fun editTask(task: TaskModel) {
         _uiState.update {
             it.copy(
@@ -75,6 +98,9 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         }
     }
 
+    /**
+     * Shows the bottom sheet to add a new task.
+     */
     fun addTask() {
         _uiState.update {
             it.copy(
@@ -84,6 +110,11 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         }
     }
 
+    /**
+     * Saves a new or updated task.
+     *
+     * @param task The task to save.
+     */
     fun saveTask(task: TaskModel) {
         viewModelScope.launch {
             tasksRepository.insertTask(task = task)
@@ -91,6 +122,9 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         }
     }
 
+    /**
+     * Hides the bottom sheet.
+     */
     fun hideBottomSheet() {
         _uiState.update {
             it.copy(
@@ -100,16 +134,33 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         }
     }
 
+    /**
+     * Handles the click event on a task.
+     *
+     * @param task The clicked task.
+     */
     fun onTaskClick(task: TaskModel) {
         // Navigate to task details or edit
         editTask(task)
     }
 
+    /**
+     * Retries loading the tasks if there was an error.
+     */
     fun retryLoadingTasks() {
         getTasks()
     }
 }
 
+/**
+ * Represents the UI state for the Tasks screen.
+ *
+ * @param tasks The list of tasks to display.
+ * @param isLoading Whether the tasks are currently being loaded.
+ * @param errorMessage An error message to display if loading fails.
+ * @param showBottomSheet Whether the bottom sheet for adding/editing a task is visible.
+ * @param taskToEdit The task that is currently being edited.
+ */
 data class TasksUiState(
     val tasks: List<TaskModel> = emptyList(),
     val isLoading: Boolean = false,
