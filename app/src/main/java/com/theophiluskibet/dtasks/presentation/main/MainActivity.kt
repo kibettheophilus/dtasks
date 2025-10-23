@@ -1,6 +1,7 @@
 package com.theophiluskibet.dtasks.presentation.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
@@ -34,6 +35,8 @@ fun DTasksApp(
     val context = LocalActivity.current
     val navController = rememberNavController()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+
+    Log.d("DTasksApp", "DTasksApp: $isLoggedIn")
 
     // Show loading screen while determining authentication status
     when (isLoggedIn) {

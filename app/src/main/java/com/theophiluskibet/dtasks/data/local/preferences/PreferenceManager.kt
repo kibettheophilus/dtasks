@@ -33,7 +33,7 @@ class PreferenceManager(private val dataStore: DataStore<Preferences>) {
     }
 
     val isLoggedIn: Flow<Boolean?> = dataStore.data.map { preferences ->
-        preferences[IS_LOGGED_IN_KEY]
+        preferences[IS_LOGGED_IN_KEY] ?: false
     }
 
     suspend fun updateIsLoggedIn(isLoggedIn: Boolean) {
